@@ -9,6 +9,7 @@ namespace Fitness.Entities.Models
 {
     public class TrainerUpdateDto
     {
+      
         public string? Name { get; set; }
         public string? Email { get; set; }
         

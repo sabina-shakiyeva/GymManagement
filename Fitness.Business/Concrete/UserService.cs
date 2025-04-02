@@ -191,9 +191,9 @@ namespace Fitness.Business.Concrete
 
             await _userDal.Delete(user);
         }
-        public async Task UpdateUser( UserUpdateDto userUpdateDto)
+        public async Task UpdateUser(int userId, UserUpdateDto userUpdateDto)
         {
-            var user = await _userDal.Get(u => u.Id == userUpdateDto.Id);
+            var user = await _userDal.Get(u => u.Id == userId);
             if (user == null)
             {
                 throw new Exception("User not found");
@@ -233,7 +233,9 @@ namespace Fitness.Business.Concrete
                 user.IsApproved = userUpdateDto.IsApproved;
                 identityUser.IsApproved = userUpdateDto.IsApproved;
             }
-           
+
+            
+
 
             if (userUpdateDto.ImageUrl != null)
             {
@@ -272,7 +274,7 @@ namespace Fitness.Business.Concrete
 
 
             }
-
+            user.UpdatedDate = DateTime.Now;
             await _userManager.UpdateAsync(identityUser);
             await _userDal.Update(user);
         }

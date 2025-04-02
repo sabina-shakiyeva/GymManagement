@@ -16,7 +16,7 @@ namespace Fitness.Business.Abstract
         Task<List<Trainer>> GetAllTrainers();
         Task<TrainerDto> GetTrainerById(int id);
         Task DeleteTrainer(int id);
-        Task UpdateTrainer(TrainerUpdateDto trainerUpdateDto);
+        Task UpdateTrainer(int trainerId,TrainerUpdateDto trainerUpdateDto);
         Task<List<ApplicationUser>> GetPendingTrainers();
         Task ApproveTrainer(string trainerId);
 

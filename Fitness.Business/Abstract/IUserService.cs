@@ -16,7 +16,7 @@ namespace Fitness.Business.Abstract
         Task<List<UserGetDto>> GetAllUsers();
         Task<UserGetDto> GetUserById(int id);
         Task DeleteUser(int id);
-        Task UpdateUser(UserUpdateDto userUpdateDto);
+        Task UpdateUser(int userId,UserUpdateDto userUpdateDto);
         Task<List<ApplicationUser>> GetPendingUsers();
         Task ApproveUser(string userId);
 

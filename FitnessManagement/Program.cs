@@ -40,6 +40,7 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IAdminDal, EfAdminDal>();
 builder.Services.AddScoped<ITrainerDal, EfTrainerDal>();
 builder.Services.AddScoped<IUserDal, EfUserDal>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITrainerService, TrainerService>();
 

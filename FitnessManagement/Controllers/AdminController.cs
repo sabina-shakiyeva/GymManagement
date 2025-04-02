@@ -45,13 +45,26 @@ namespace FitnessManagement.Controllers
             return Ok("User added successfully!");
 
         }
-        [HttpPut("update-user")]
-        public async Task<IActionResult> UpdateUser([FromForm] UserUpdateDto userUpdateDto)
+        [HttpPut("update-user/{userId}")]
+        public async Task<IActionResult> UpdateUser([FromForm] UserUpdateDto userUpdateDto,int userId)
         {
             try
             {
-                await _userService.UpdateUser(userUpdateDto);
+                await _userService.UpdateUser(userId,userUpdateDto);
                 return Ok(new { message = "User updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        [HttpPut("update-trainer/{trainerId}")]
+        public async Task<IActionResult> UpdateTrainer([FromForm] TrainerUpdateDto trainerUpdateDto, int trainerId)
+        {
+            try
+            {
+                await _trainerService.UpdateTrainer(trainerId,trainerUpdateDto);
+                return Ok(new { message = "Trainer updated successfully." });
             }
             catch (Exception ex)
             {
@@ -60,13 +73,27 @@ namespace FitnessManagement.Controllers
         }
 
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("delete-user/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             try
             {
                 await _userService.DeleteUser(id);
                 return Ok(new { message = "User deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("delete-trainer/{id}")]
+        public async Task<IActionResult> DeleteTrainer(int id)
+        {
+            try
+            {
+                await _trainerService.DeleteTrainer(id);
+                return Ok(new { message = "Trainer deleted successfully." });
             }
             catch (Exception ex)
             {

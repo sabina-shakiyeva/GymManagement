@@ -1,4 +1,6 @@
-﻿using Fitness.Entities.Concrete;
+﻿using Fitness.Business.Abstract;
+using Fitness.Entities.Concrete;
+using Fitness.Entities.Models;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -21,16 +23,18 @@ namespace FitnessManagement.Controllers
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IAdminService _adminService;
 
-        public AuthController(IConfiguration configuration, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AuthController(IConfiguration configuration, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IAdminService adminService)
         {
             _configuration = configuration;
             _userManager = userManager;
             _roleManager = roleManager;
+            _adminService = adminService;
         }
 
         [HttpPost("signup-admin")]
-        public async Task<IActionResult> SignUpAdmin([FromBody] RegisterModel dto)
+        public async Task<IActionResult> SignUpAdmin([FromBody] RegisterModelAdmin dto)
         {
             var admin = new ApplicationUser
             {
@@ -49,6 +53,7 @@ namespace FitnessManagement.Controllers
                 }
 
                 await _userManager.AddToRoleAsync(admin, "Admin");
+                await _adminService.AddAdminAsync(admin);
                 return Ok(new { Status = "Success", Message = "Admin created successfully!" });
             }
 
