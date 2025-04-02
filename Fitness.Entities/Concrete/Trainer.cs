@@ -10,15 +10,14 @@ namespace FitnessManagement.Entities
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string? Speciality { get; set; }
-        public string ImageUrl { get; set; } 
+        public string? ImageUrl { get; set; } 
         public bool IsActive { get; set; } = true;
 
         public bool IsApproved { get; set; } = false;
         public string? Description { get; set; }
         public string? Experience { get; set; }
-        public decimal Salary { get; set; } 
-        public DateTime JoinedDate { get; set; } 
-        public string MobileTelephone { get; set; }
+        public decimal? Salary { get; set; } 
+        public string? MobileTelephone { get; set; }
         public ICollection<User> Users { get; set; }
         public ICollection<Workout> Workouts { get; set; }
         public ICollection<Message> Messages { get; set; }

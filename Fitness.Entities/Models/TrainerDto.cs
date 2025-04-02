@@ -14,7 +14,7 @@ namespace FitnessManagement.Dtos
         public string? Experience { get; set; }
         public IFormFile? ImageUrl { get; set; }
         public decimal? Salary { get; set; }
-        public DateTime? JoinedDate { get; set; }
+        //public DateTime? JoinedDate { get; set; }
         public string? MobileTelephone { get; set; }
     }
 }

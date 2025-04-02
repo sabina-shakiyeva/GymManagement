@@ -21,7 +21,7 @@ namespace Fitness.Entities.Models
         public string? CurrentPassword { get; set; }
         public string? NewPassword { get; set; } 
         public decimal? Salary { get; set; }
-        public DateTime? JoinedDate { get; set; }
+        //public DateTime? JoinedDate { get; set; }
         public string? MobileTelephone { get; set; }
     }
 }

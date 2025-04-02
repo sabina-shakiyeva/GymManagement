@@ -54,45 +54,79 @@ namespace FitnessManagement.Controllers
 
             return BadRequest(new { Status = "Error", Message = "Admin creation failed!", Errors = result.Errors });
         }
-
-
-
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] RegisterModel dto)
         {
-            //if (string.IsNullOrEmpty(dto.Role))
-            //{
-            //    return BadRequest(new { Status = "Error", Message = "Role is required!" });
-            //}
+            // Yalnız "User" və "Trainer" rollarına icazə verək
+            if (dto.Role != "User" && dto.Role != "Trainer")
+            {
+                return BadRequest(new { Status = "Error", Message = "Invalid role! Only 'User' and 'Trainer' are allowed." });
+            }
+
             var user = new ApplicationUser
             {
                 UserName = dto.Email,
                 Email = dto.Email,
                 FullName = dto.FullName,
-
-                IsApproved = false 
+                IsApproved = false
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                if (!await _roleManager.RoleExistsAsync("User"))
-                {
-                    await _roleManager.CreateAsync(new IdentityRole("User"));
-                    //await _roleManager.CreateAsync(new IdentityRole(dto.Role));
-                }
-
-                await _userManager.AddToRoleAsync(user, "User");
-
-                return Ok(new { Status = "Success", Message = $"User registered successfully! Waiting for admin approval." });
+                return BadRequest(new { Status = "Error", Message = "Registration failed!", Errors = result.Errors });
             }
 
-            return BadRequest(new { Status = "Error", Message = "Registration failed!", Errors = result.Errors });
+            // Rolu yoxlayıb, mövcud deyilsə, yaradıb təyin edirik
+            if (!await _roleManager.RoleExistsAsync(dto.Role))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(dto.Role));
+            }
+
+            await _userManager.AddToRoleAsync(user, dto.Role);
+
+            return Ok(new { Status = "Success", Message = $"User registered successfully as {dto.Role}! Waiting for admin approval." });
         }
 
 
 
-     
+
+        //[HttpPost("signup")]
+        //public async Task<IActionResult> SignUp([FromBody] RegisterModel dto)
+        //{
+        //    //if (string.IsNullOrEmpty(dto.Role))
+        //    //{
+        //    //    return BadRequest(new { Status = "Error", Message = "Role is required!" });
+        //    //}
+        //    var user = new ApplicationUser
+        //    {
+        //        UserName = dto.Email,
+        //        Email = dto.Email,
+        //        FullName = dto.FullName,
+
+        //        IsApproved = false 
+        //    };
+
+        //    var result = await _userManager.CreateAsync(user, dto.Password);
+        //    if (result.Succeeded)
+        //    {
+        //        if (!await _roleManager.RoleExistsAsync("User"))
+        //        {
+        //            await _roleManager.CreateAsync(new IdentityRole("User"));
+        //            //await _roleManager.CreateAsync(new IdentityRole(dto.Role));
+        //        }
+
+        //        await _userManager.AddToRoleAsync(user, "User");
+
+        //        return Ok(new { Status = "Success", Message = $"User registered successfully! Waiting for admin approval." });
+        //    }
+
+        //    return BadRequest(new { Status = "Error", Message = "Registration failed!", Errors = result.Errors });
+        //}
+
+
+
+
         [HttpPost("signin")]
         public async Task<IActionResult> SignIn([FromBody] LoginModel dto)
         {
@@ -120,8 +154,9 @@ namespace FitnessManagement.Controllers
             }
 
             var token = GetToken(authClaims);
+            var userRole=userRoles.FirstOrDefault();
 
-            return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token), Expiration = token.ValidTo });
+            return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token), Expiration = token.ValidTo,Role=userRole });
         }
 
         private JwtSecurityToken GetToken(List<Claim> authClaims)

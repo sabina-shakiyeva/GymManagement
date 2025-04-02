@@ -1,4 +1,5 @@
-﻿using Fitness.Entities.Models;
+﻿using Fitness.Entities.Concrete;
+using Fitness.Entities.Models;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using System;
@@ -16,5 +17,9 @@ namespace Fitness.Business.Abstract
         Task<TrainerDto> GetTrainerById(int id);
         Task DeleteTrainer(int id);
         Task UpdateTrainer(TrainerUpdateDto trainerUpdateDto);
+        Task<List<ApplicationUser>> GetPendingTrainers();
+        Task ApproveTrainer(string trainerId);
+
+
     }
 }

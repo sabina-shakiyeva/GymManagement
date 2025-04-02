@@ -7,6 +7,7 @@ using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using FitnessManagement.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,87 @@ namespace Fitness.Business.Concrete
 
 
         }
+        public async Task ApproveUser(string userId)
+        {
+            // Pending user tapılır
+            var user = await _userManager.Users
+                .Where(u => u.Id == userId && !u.IsApproved)  // Burada yalnız təsdiqlənməmiş istifadəçi seçilir
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                throw new Exception("İstifadəçi tapılmadı və ya artıq təsdiqlənib.");
+            }
+
+            // İstifadəçini təsdiqlə
+            user.IsApproved = true;
+
+            // Parol məlumatlarını əldə et (hash və salt)
+            var identityUser = await _userManager.FindByIdAsync(userId);
+            if (identityUser == null)
+            {
+                throw new Exception("IdentityUser tapılmadı.");
+            }
+
+            // Parol məlumatlarını istifadəçiyə daxil et
+            var passwordHash = identityUser.PasswordHash;
+            var passwordSalt = identityUser.SecurityStamp;
+
+            var saltBytes = Encoding.UTF8.GetBytes(passwordSalt);
+            var hashBytes = Encoding.UTF8.GetBytes(passwordHash);
+
+            // İstifadəçini yenilə
+            var existingUser = await _userDal.Get(u => u.IdentityUserId == user.Id);
+            if (existingUser == null)
+            {
+                var newUser = new User
+                {
+                    IdentityUserId = identityUser.Id,
+                    Name = identityUser.FullName,
+                    Email = identityUser.Email,
+                    IsActive = true,
+                    IsApproved = true,
+                    PasswordHash = hashBytes,
+                    PasswordSalt = saltBytes,
+                };
+                await _userDal.Add(newUser);
+            }
+
+            // DB-də istifadəçini yenilə
+            var result = await _userManager.UpdateAsync(identityUser);
+            if (!result.Succeeded)
+            {
+                throw new Exception("İstifadəçi məlumatları yenilənərkən səhv baş verdi.");
+            }
+        }
+
+
+
+
+
+
+        public async Task<List<ApplicationUser>> GetPendingUsers()
+        {
+            var allUsers = await _userManager.Users
+                .Where(u => !u.IsApproved)
+                .ToListAsync();
+
+            var pendingUsers = new List<ApplicationUser>();
+
+            foreach (var user in allUsers)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains("User"))
+                {
+                    pendingUsers.Add(user);
+                }
+            }
+
+            return pendingUsers;
+        }
+
+
+    
 
         public async Task AddUser(UserDto userDto)
         {

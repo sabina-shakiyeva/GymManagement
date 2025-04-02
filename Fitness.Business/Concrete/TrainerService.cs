@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
+using Fitness.DataAccess.Concrete.EfEntityFramework;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using FitnessManagement.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +33,80 @@ namespace Fitness.Business.Concrete
             _userManager = userManager;
             _roleManager = roleManager;
         }
+
+        public async Task ApproveTrainer(string trainerId)
+        {
+            
+            var trainer = await _userManager.Users
+                .Where(u => u.Id == trainerId && !u.IsApproved)  
+                .FirstOrDefaultAsync();
+
+            if (trainer == null)
+            {
+                throw new Exception("Trainer tapılmadı və ya artıq təsdiqlənib.");
+            }
+
+           
+            trainer.IsApproved = true;
+
+            var identityUser = await _userManager.FindByIdAsync(trainerId);
+            if (identityUser == null)
+            {
+                throw new Exception("IdentityUser tapılmadı.");
+            }
+
+            var passwordHash = identityUser.PasswordHash;
+            var passwordSalt = identityUser.SecurityStamp;
+
+            var saltBytes = Encoding.UTF8.GetBytes(passwordSalt);
+            var hashBytes = Encoding.UTF8.GetBytes(passwordHash);
+
+         
+            var existingTrainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainer.Id);
+            if (existingTrainer == null)
+            {
+                var newTrainer = new Trainer
+                {
+                    IdentityTrainerId = identityUser.Id,
+                    Name = identityUser.FullName,
+                    Email = identityUser.Email,
+                    IsActive = true,
+                    IsApproved = true,
+                    PasswordHash = hashBytes,
+                    PasswordSalt = saltBytes,
+                };
+                await _trainerDal.Add(newTrainer);
+            }
+
+           
+            var result = await _userManager.UpdateAsync(identityUser);
+            if (!result.Succeeded)
+            {
+                throw new Exception("Trainer məlumatları yenilənərkən səhv baş verdi.");
+            }
+        }
+
+        public async Task<List<ApplicationUser>> GetPendingTrainers()
+        {
+            var allUsers = await _userManager.Users
+                .Where(u => !u.IsApproved)
+                .ToListAsync();
+
+            var pendingTrainers = new List<ApplicationUser>();
+
+            foreach (var user in allUsers)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains("Trainer"))
+                {
+                    pendingTrainers.Add(user);
+                }
+            }
+
+            return pendingTrainers;
+        }
+
+
 
         public async Task AddTrainer(TrainerDto trainerDto)
         {
@@ -79,15 +155,14 @@ namespace Fitness.Business.Concrete
             trainer.Description = trainerDto.Description;
             trainer.Experience = trainerDto.Experience;
             trainer.Salary = trainerDto.Salary ?? 0; 
-            trainer.JoinedDate = trainerDto.JoinedDate ?? DateTime.UtcNow; 
+            //trainer.JoinedDate = trainerDto.JoinedDate ?? DateTime.UtcNow; 
             trainer.MobileTelephone = trainerDto.MobileTelephone;
             await _trainerDal.Add(trainer);
 
 
-            //await _userManager.AddToRoleAsync(identityTrainer, "Trainer");
             if (!await _roleManager.RoleExistsAsync("Trainer"))
             {
-                //await _roleManager.CreateAsync(new IdentityRole("User"));
+                
                 await _roleManager.CreateAsync(new IdentityRole("Trainer"));
             }
         }

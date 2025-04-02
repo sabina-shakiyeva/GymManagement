@@ -89,63 +89,75 @@ namespace FitnessManagement.Controllers
             }
             return Ok(user);
         }
-      
-
-        [HttpPost("approve-user/{userId}")]
-        public async Task<IActionResult> ApproveUser(string userId)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound(new { Status = "Error", Message = "User not found!" });
-            }
-            user.IsApproved = true;
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
-            {
-                return BadRequest(new { Status = "Error", Message = "Failed to approve the user!" });
-            }
-
-            var passwordHash = user.PasswordHash;
-            var passwordSalt = user.SecurityStamp;
-            var saltBytes = Encoding.UTF8.GetBytes(passwordSalt);
-            var hashBytes = Encoding.UTF8.GetBytes(passwordHash);
-
-            var existingUser=await _userDal.Get(u => u.IdentityUserId==user.Id);
-            if (existingUser == null)
-            {
-                var newUser = new User
-                {
-                    IdentityUserId = user.Id,
-                    Name = user.FullName,
-                    Email = user.Email,
-                    IsActive = true,
-                    IsApproved = true,
-                    PasswordHash = hashBytes,
-                    PasswordSalt= saltBytes,
-                    
-                };
-                await _userDal.Add(newUser);
-
-            }
-
-            return Ok(new { Status = "Success", Message = "User approved successfully!" });
-        }
-
         [HttpGet("pending-users")]
         public async Task<IActionResult> GetPendingUsers()
         {
-            var pendingUsers = _userManager.Users.Where(u => !u.IsApproved).Select(u => new
+            var pendingUsers = await _userService.GetPendingUsers();
+
+            if (!pendingUsers.Any())
+            {
+                return NotFound(new { Status = "Error", Message = "No pending users found!" });
+            }
+
+            return Ok(pendingUsers.Select(u => new
             {
                 u.Id,
                 u.FullName,
                 u.Email,
                 u.UserName
-            }).ToList();
-
-            return Ok(pendingUsers);
+            }));
         }
-        
+
+        [HttpGet("pending-trainers")]
+        public async Task<IActionResult> GetPendingTrainers()
+        {
+            var pendingTrainers = await _trainerService.GetPendingTrainers();
+
+            if (!pendingTrainers.Any())
+            {
+                return NotFound(new { Status = "Error", Message = "No pending trainers found!" });
+            }
+
+            return Ok(pendingTrainers.Select(t => new
+            {
+                t.Id,
+                t.FullName,
+                t.Email,
+                t.UserName
+            }));
+        }
+
+
+        [HttpPost("approve-user/{userId}")]
+        public async Task<IActionResult> ApproveUser(string userId)
+        {
+            try
+            {
+                await _userService.ApproveUser(userId);
+                return Ok(new { Status = "Success", Message = "User approved successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Status = "Error", Message = ex.Message });
+            }
+        }
+
+
+        [HttpPost("approve-trainer/{trainerId}")]
+        public async Task<IActionResult> ApproveTrainer(string trainerId)
+        {
+            try
+            {
+                await _trainerService.ApproveTrainer(trainerId);
+                return Ok(new { Status = "Success", Message = "Trainer approved successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Status = "Error", Message = ex.Message });
+            }
+        }
+
+      
         [HttpPost("add-trainer")]
         public async Task<IActionResult> AddTrainer([FromForm] TrainerDto trainerDto)
         {
