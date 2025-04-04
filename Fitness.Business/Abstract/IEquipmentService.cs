@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FitnessManagement.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Fitness.Business.Abstract
 {
     public interface IEquipmentService
     {
-
+        Task AddEquipment(EquipmentDto equipmentDto);
     }
 }
