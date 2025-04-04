@@ -106,6 +106,12 @@ namespace FitnessManagement.Controllers
             var users = await _userService.GetAllUsers();
             return Ok(users);
         }
+        [HttpGet("trainers")]
+        public async Task<IActionResult> GetAllTrainers()
+        {
+            var trainers = await _trainerService.GetAllTrainers();
+            return Ok(trainers);
+        }
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -115,6 +121,16 @@ namespace FitnessManagement.Controllers
                 return NotFound("Not Found");
             }
             return Ok(user);
+        }
+        [HttpGet("trainer/{id}")]
+        public async Task<IActionResult> GetTrainerById(int id)
+        {
+            var trainer = await _trainerService.GetTrainerById(id);
+            if (trainer == null)
+            {
+                return NotFound("Not Found");
+            }
+            return Ok(trainer);
         }
         [HttpGet("pending-users")]
         public async Task<IActionResult> GetPendingUsers()

@@ -13,8 +13,8 @@ namespace Fitness.Business.Abstract
     public interface ITrainerService
     {
         Task AddTrainer(TrainerDto trainerDto);
-        Task<List<Trainer>> GetAllTrainers();
-        Task<TrainerDto> GetTrainerById(int id);
+        Task<List<TrainerGetDto>> GetAllTrainers();
+        Task<TrainerGetDto> GetTrainerById(int id);
         Task DeleteTrainer(int id);
         Task UpdateTrainer(int trainerId,TrainerUpdateDto trainerUpdateDto);
         Task<List<ApplicationUser>> GetPendingTrainers();

@@ -36,9 +36,9 @@ namespace Fitness.Business.Concrete
         }
         public async Task ApproveUser(string userId)
         {
-            // Pending user tapılır
+           
             var user = await _userManager.Users
-                .Where(u => u.Id == userId && !u.IsApproved)  // Burada yalnız təsdiqlənməmiş istifadəçi seçilir
+                .Where(u => u.Id == userId && !u.IsApproved) 
                 .FirstOrDefaultAsync();
 
             if (user == null)
@@ -46,24 +46,22 @@ namespace Fitness.Business.Concrete
                 throw new Exception("İstifadəçi tapılmadı və ya artıq təsdiqlənib.");
             }
 
-            // İstifadəçini təsdiqlə
+            
             user.IsApproved = true;
 
-            // Parol məlumatlarını əldə et (hash və salt)
+         
             var identityUser = await _userManager.FindByIdAsync(userId);
             if (identityUser == null)
             {
                 throw new Exception("IdentityUser tapılmadı.");
             }
 
-            // Parol məlumatlarını istifadəçiyə daxil et
             var passwordHash = identityUser.PasswordHash;
             var passwordSalt = identityUser.SecurityStamp;
 
             var saltBytes = Encoding.UTF8.GetBytes(passwordSalt);
             var hashBytes = Encoding.UTF8.GetBytes(passwordHash);
 
-            // İstifadəçini yenilə
             var existingUser = await _userDal.Get(u => u.IdentityUserId == user.Id);
             if (existingUser == null)
             {
@@ -80,7 +78,6 @@ namespace Fitness.Business.Concrete
                 await _userDal.Add(newUser);
             }
 
-            // DB-də istifadəçini yenilə
             var result = await _userManager.UpdateAsync(identityUser);
             if (!result.Succeeded)
             {
@@ -288,6 +285,7 @@ namespace Fitness.Business.Concrete
 
             var userDtos = users.Select(user => new UserGetDto
             {
+                Id= user.Id,
                 Name = user.Name,
                 Email = user.Email,
                 Phone = user.Phone,
@@ -308,6 +306,7 @@ namespace Fitness.Business.Concrete
            
             var userDto = new UserGetDto
             {
+                Id=user.Id,
                 Name = user.Name,
                 Email = user.Email,
                 Phone = user.Phone,

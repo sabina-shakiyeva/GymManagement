@@ -190,14 +190,43 @@ namespace Fitness.Business.Concrete
 
             await _trainerDal.Delete(trainer);
         }
-        public Task<List<Trainer>> GetAllTrainers()
+        public async Task<List<TrainerGetDto>> GetAllTrainers()
         {
-            throw new NotImplementedException();
+            var trainers = await _trainerDal.GetList();
+
+            var trainerDtos = trainers.Select(trainer => new TrainerGetDto
+            {
+                Id = trainer.Id,
+                Name = trainer.Name,
+                Email = trainer.Email,
+                MobileTelephone = trainer.MobileTelephone,
+                CreatedDate = trainer.CreatedDate,
+                Experience=trainer.Experience,
+                Salary=trainer.Salary,
+                ImageUrl = trainer.ImageUrl != null ? _fileService.GetFileUrl(trainer.ImageUrl) : null
+            }).ToList();
+
+            return trainerDtos;
         }
 
-        public Task<TrainerDto> GetTrainerById(int id)
+        public async Task<TrainerGetDto> GetTrainerById(int id)
         {
-            throw new NotImplementedException();
+            var trainer = await _trainerDal.Get(t => t.Id == id);
+
+
+            var trainerDto = new TrainerGetDto
+            {
+                Id = trainer.Id,
+                Name = trainer.Name,
+                Email = trainer.Email,
+                MobileTelephone = trainer.MobileTelephone,
+                CreatedDate = trainer.CreatedDate,
+                Experience = trainer.Experience,
+                Salary = trainer.Salary,
+                ImageUrl = trainer.ImageUrl != null ? _fileService.GetFileUrl(trainer.ImageUrl) : null
+            };
+
+            return trainerDto;
         }
 
         public async Task UpdateTrainer(int trainerId,TrainerUpdateDto trainerUpdateDto)

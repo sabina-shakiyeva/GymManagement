@@ -16,7 +16,9 @@ namespace FitnessManagement.Dtos
         [Required]
         [MinLength(6)]
         public string Password { get; set; }
+
         public string Role { get; set; }
+        
       
 
 

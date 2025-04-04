@@ -27,7 +27,7 @@ namespace FitnessManagement.Data
 
         public DbSet<Workout> Workouts { get; set; }
 
-        public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<Package> Packages { get; set; }
 
         public DbSet<Payment> Payments { get; set; }
 
@@ -50,11 +50,11 @@ namespace FitnessManagement.Data
           
             modelBuilder.Entity<User>()
 
-           .HasOne(u => u.Subscription)
+           .HasOne(u => u.Package)
 
            .WithMany(s => s.Users)
 
-           .HasForeignKey(u => u.SubscriptionId)
+           .HasForeignKey(u => u.PackageId)
 
            .OnDelete(DeleteBehavior.SetNull);
 

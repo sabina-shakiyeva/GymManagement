@@ -1,10 +1,15 @@
-﻿namespace FitnessManagement.Entities
+﻿using Fitness.Core.Abstraction;
+
+namespace FitnessManagement.Entities
 {
-    public class Equipment
+    public class Equipment:BaseEntity, IEntity
     {
-        public int Id { get; set; }
+        
         public string Name { get; set; }
-        public string Type { get; set; } //  Dumbbell, Treadmill
+        public string Description { get; set; } //  Dumbbell, Treadmill
+        public decimal? Price { get; set; }
         public bool IsAvailable { get; set; }
+        public decimal? Unit { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

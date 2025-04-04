@@ -1,6 +1,7 @@
 ﻿using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
 using Fitness.Entities.Concrete;
+using Fitness.Entities.Models;
 using FitnessManagement.Entities;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,11 @@ namespace Fitness.Business.Concrete
 
                 await _adminDal.Add(newAdmin);
             }
+        }
+
+        public Task UpdateAdminAsync(int adminId, AdminUpdateDto adminUpdateDto)
+        {
+            throw new NotImplementedException();
         }
     }
 }
