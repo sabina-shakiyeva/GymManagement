@@ -150,8 +150,8 @@ namespace Fitness.DataAccess.Migrations
                     b.Property<DateTime>("AttendanceDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsPresent")
-                        .HasColumnType("bit");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");

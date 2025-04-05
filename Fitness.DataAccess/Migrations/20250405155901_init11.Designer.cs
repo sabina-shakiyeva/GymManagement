@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fitness.DataAccess.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20250405113950_init11")]
+    [Migration("20250405155901_init11")]
     partial class init11
     {
         /// <inheritdoc />
@@ -153,8 +153,8 @@ namespace Fitness.DataAccess.Migrations
                     b.Property<DateTime>("AttendanceDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsPresent")
-                        .HasColumnType("bit");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");

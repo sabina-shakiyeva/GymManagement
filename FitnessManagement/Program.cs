@@ -20,6 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAutoMapper(typeof(UserMapper));
 builder.Services.AddAutoMapper(typeof(TrainerMapper));
+builder.Services.AddAutoMapper(typeof(Mapper));
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
@@ -41,10 +42,12 @@ builder.Services.AddScoped<IAdminDal, EfAdminDal>();
 builder.Services.AddScoped<ITrainerDal, EfTrainerDal>();
 builder.Services.AddScoped<IUserDal, EfUserDal>();
 builder.Services.AddScoped<IEquipmentDal, EfEquipmentDal>();
+builder.Services.AddScoped<IAttendanceDal, EfAttendanceDal>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITrainerService, TrainerService>();
 builder.Services.AddScoped<IEquipmentService, EquipmentService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<GymDbContext>()
