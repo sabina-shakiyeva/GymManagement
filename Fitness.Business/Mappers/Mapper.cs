@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Fitness.Entities.Models;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using System;
@@ -14,6 +15,7 @@ namespace Fitness.Business.Mappers
         public Mapper()
         {
             CreateMap<Equipment, EquipmentDto>().ReverseMap();
+            
         }
     }
 }

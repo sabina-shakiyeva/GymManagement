@@ -184,6 +184,36 @@ namespace FitnessManagement.Controllers
                 return BadRequest(new { Status = "Error", Message = ex.Message });
             }
         }
+        [HttpPost("decline-user/{userId}")]
+        public async Task<IActionResult> DeclineUser(string userId)
+        {
+            try
+            {
+              
+                await _userService.DeclineUser(userId);
+                return Ok(new { Status = "Success", Message = "User declined and removed from pending users!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Status = "Error", Message = ex.Message });
+            }
+        }
+
+        [HttpPost("decline-trainer/{trainerId}")]
+        public async Task<IActionResult> DeclineTrainer(string trainerId)
+        {
+            try
+            {
+
+                await _trainerService.DeclineTrainer(trainerId);
+                return Ok(new { Status = "Success", Message = "Trainer declined and removed from pending trainers!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Status = "Error", Message = ex.Message });
+            }
+        }
+
 
 
         [HttpPost("approve-trainer/{trainerId}")]

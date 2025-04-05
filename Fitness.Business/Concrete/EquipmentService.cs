@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
+using Fitness.DataAccess.Concrete.EfEntityFramework;
+using Fitness.Entities.Models;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using FitnessManagement.Services;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,51 +38,76 @@ namespace Fitness.Business.Concrete
 
             await _equipmentDal.Add(equipment);
         }
+        public async Task DeleteEquipment(int equipmentId)
+        {
+            var equipment = await _equipmentDal.Get(e => e.Id == equipmentId);
+            if (equipment == null)
+            {
+                throw new Exception("Equipment not found!");
+            }
 
-        //public async Task DeleteEquipment(int equipmentId)
-        //{
-        //    var equipment = await _equipmentDal.Get(e => e.Id == equipmentId);
-        //    if (equipment == null)
-        //    {
-        //        throw new Exception("Equipment not found!");
-        //    }
+            await _equipmentDal.Delete(equipment);
+        }
 
-        //    await _equipmentDal.Delete(equipment);
-        //}
-        //public async Task UpdateEquipment(int equipmentId, EquipmentDto equipmentDto)
-        //{
-        //    var equipment = await _equipmentDal.Get(e => e.Id == equipmentId);
-        //    if (equipment == null)
-        //    {
-        //        throw new Exception("Equipment not found!");
-        //    }
+        public async Task UpdateEquipment(int equipmentId, EquipmentDto equipmentDto)
+        {
+            var equipment = await _equipmentDal.Get(e => e.Id == equipmentId);
+            if (equipment == null)
+            {
+                throw new Exception("Equipment not found!");
+            }
 
-        //    _mapper.Map(equipmentDto, equipment);
+            _mapper.Map(equipmentDto, equipment);
 
-        //    if (equipmentDto.ImageUrl != null)
-        //    {
-        //        string imageUrl = await _fileService.UploadFileAsync(equipmentDto.ImageUrl);
-        //        equipment.ImageUrl = imageUrl;
-        //    }
+            if (equipmentDto.ImageUrl != null)
+            {
+                string imageUrl = await _fileService.UploadFileAsync(equipmentDto.ImageUrl);
+                equipment.ImageUrl = imageUrl;
+            }
+            equipment.UpdatedDate = DateTime.Now;
+            await _equipmentDal.Update(equipment);
+        }
 
-        //    await _equipmentDal.Update(equipment);
-        //}
+        public async Task<List<EquipmentGetDto>> GetAllEquipment()
+        {
 
-        //public async Task<List<EquipmentDto>> GetAllEquipment()
-        //{
-        //    var equipmentList = await _equipmentDal.GetList();
-        //    return _mapper.Map<List<EquipmentDto>>(equipmentList);
-        //}
+            var equipments = await _equipmentDal.GetList();
 
-        //public async Task<EquipmentDto> GetEquipmentById(int id)
-        //{
-        //    var equipment = await _equipmentDal.Get(e => e.Id == id);
-        //    if (equipment == null)
-        //    {
-        //        throw new Exception("Equipment not found!");
-        //    }
+            var equipmentDtos = equipments.Select(equipment => new EquipmentGetDto
+            {
+                Id = equipment.Id,
+                Name = equipment.Name,      
+                Description = equipment.Description,
+                IsAvailable = equipment.IsAvailable,
+                Price = equipment.Price,
+                Unit = equipment.Unit,
+                ImageUrl = equipment.ImageUrl != null ? _fileService.GetFileUrl(equipment.ImageUrl) : null
+            }).ToList();
 
-        //    return _mapper.Map<EquipmentDto>(equipment);
-        //}
+            return equipmentDtos;
+         
+
+        }
+
+        public async Task<EquipmentGetDto> GetEquipmentById(int id)
+        {
+          
+            var equipment = await _equipmentDal.Get(u => u.Id == id);
+
+
+            var equipmentDto = new EquipmentGetDto
+            {
+                Id = equipment.Id,
+                Name = equipment.Name,
+                Description = equipment.Description,
+                IsAvailable = equipment.IsAvailable,
+                Price = equipment.Price,
+                Unit = equipment.Unit,
+                ImageUrl = equipment.ImageUrl != null ? _fileService.GetFileUrl(equipment.ImageUrl) : null
+            };
+
+            return equipmentDto;
+        }
+      
     }
 }

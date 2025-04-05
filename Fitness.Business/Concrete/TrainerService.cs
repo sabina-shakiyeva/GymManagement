@@ -105,7 +105,21 @@ namespace Fitness.Business.Concrete
 
             return pendingTrainers;
         }
+        public async Task DeclineTrainer(string trainerId)
+        {
 
+            var trainer = await _userManager.Users.FirstOrDefaultAsync(t => t.Id == trainerId && !t.IsApproved);
+
+            if (trainer != null)
+            {
+
+                await _userManager.DeleteAsync(trainer);
+            }
+            else
+            {
+                throw new Exception("Trainer not found in pending trainers!");
+            }
+        }
 
 
         public async Task AddTrainer(TrainerDto trainerDto)

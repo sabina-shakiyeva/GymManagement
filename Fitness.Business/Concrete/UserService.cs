@@ -110,8 +110,23 @@ namespace Fitness.Business.Concrete
             return pendingUsers;
         }
 
+        public async Task DeclineUser(string userId)
+        {
+           
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId && !u.IsApproved);
 
-    
+            if (user != null)
+            {
+
+                await _userManager.DeleteAsync(user);
+            }
+            else
+            {
+                throw new Exception("User not found in pending users!");
+            }
+        }
+
+
 
         public async Task AddUser(UserDto userDto)
         {

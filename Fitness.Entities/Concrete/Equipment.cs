@@ -6,7 +6,7 @@ namespace FitnessManagement.Entities
     {
         
         public string Name { get; set; }
-        public string Description { get; set; } //  Dumbbell, Treadmill
+        public string? Description { get; set; } //  Dumbbell, Treadmill
         public decimal? Price { get; set; }
         public bool IsAvailable { get; set; }
         public decimal? Unit { get; set; }

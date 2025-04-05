@@ -19,6 +19,7 @@ namespace Fitness.Business.Abstract
         Task UpdateUser(int userId,UserUpdateDto userUpdateDto);
         Task<List<ApplicationUser>> GetPendingUsers();
         Task ApproveUser(string userId);
+        Task DeclineUser(string userId);
 
 
 
