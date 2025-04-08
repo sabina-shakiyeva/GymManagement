@@ -16,6 +16,8 @@ namespace Fitness.Business.Mappers
         {
             CreateMap<Equipment, EquipmentDto>().ReverseMap();
             CreateMap<TakeAttendanceDto, Attendance>();
+            CreateMap<Package, PackageDto>().ReverseMap();
+            CreateMap<Package, PackageGetDto>().ReverseMap();
 
         }
     }

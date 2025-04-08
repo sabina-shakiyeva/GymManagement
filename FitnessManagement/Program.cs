@@ -43,11 +43,15 @@ builder.Services.AddScoped<ITrainerDal, EfTrainerDal>();
 builder.Services.AddScoped<IUserDal, EfUserDal>();
 builder.Services.AddScoped<IEquipmentDal, EfEquipmentDal>();
 builder.Services.AddScoped<IAttendanceDal, EfAttendanceDal>();
+builder.Services.AddScoped<IPackageDal, EfPackageDal>();
+builder.Services.AddScoped<IUserEquipmentUsageDal, EfUserEquipmentUsageDal>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITrainerService, TrainerService>();
 builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+builder.Services.AddScoped<IPackageService, PackageService>();
+builder.Services.AddScoped<IUserEquipmentUsageService, UserEquipmentUsageService>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<GymDbContext>()

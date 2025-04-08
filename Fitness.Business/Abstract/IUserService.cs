@@ -20,6 +20,8 @@ namespace Fitness.Business.Abstract
         Task<List<ApplicationUser>> GetPendingUsers();
         Task ApproveUser(string userId);
         Task DeclineUser(string userId);
+        Task<List<TopUserDto>> GetTop10UsersByPointsAsync();
+
 
 
 

@@ -6,6 +6,7 @@ using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -137,10 +138,10 @@ namespace FitnessManagement.Controllers
         {
             var pendingUsers = await _userService.GetPendingUsers();
 
-            if (!pendingUsers.Any())
-            {
-                return NotFound(new { Status = "Error", Message = "No pending users found!" });
-            }
+            //if (!pendingUsers.Any())
+            //{
+            //    return NotFound(new { Status = "Error", Message = "No pending users found!" });
+            //}
 
             return Ok(pendingUsers.Select(u => new
             {
@@ -149,6 +150,7 @@ namespace FitnessManagement.Controllers
                 u.Email,
                 u.UserName
             }));
+           
         }
 
         [HttpGet("pending-trainers")]
@@ -156,10 +158,10 @@ namespace FitnessManagement.Controllers
         {
             var pendingTrainers = await _trainerService.GetPendingTrainers();
 
-            if (!pendingTrainers.Any())
-            {
-                return NotFound(new { Status = "Error", Message = "No pending trainers found!" });
-            }
+            //if (!pendingTrainers.Any())
+            //{
+            //    return NotFound(new { Status = "Error", Message = "No pending trainers found!" });
+            //}
 
             return Ok(pendingTrainers.Select(t => new
             {

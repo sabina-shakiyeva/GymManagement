@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fitness.DataAccess.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20250405155901_init11")]
-    partial class init11
+    [Migration("20250407073139_init13")]
+    partial class init13
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,6 +95,83 @@ namespace Fitness.DataAccess.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Fitness.Entities.Concrete.UserBmiInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double?>("Bmi")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("HeightCm")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("WeightKg")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserBmiInfos");
+                });
+
+            modelBuilder.Entity("Fitness.Entities.Concrete.UserEquipmentUsage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DurationInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EquipmentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Repetition")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserEquipmentUsages");
                 });
 
             modelBuilder.Entity("FitnessManagement.Entities.Admin", b =>
@@ -261,7 +338,6 @@ namespace Fitness.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DurationInMonths")
@@ -450,6 +526,9 @@ namespace Fitness.DataAccess.Migrations
 
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Point")
+                        .HasColumnType("int");
 
                     b.Property<int?>("TrainerId")
                         .HasColumnType("int");
@@ -648,6 +727,36 @@ namespace Fitness.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Fitness.Entities.Concrete.UserBmiInfo", b =>
+                {
+                    b.HasOne("FitnessManagement.Entities.User", "User")
+                        .WithMany("BmiInfos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Fitness.Entities.Concrete.UserEquipmentUsage", b =>
+                {
+                    b.HasOne("FitnessManagement.Entities.Equipment", "Equipment")
+                        .WithMany("EquipmentUsages")
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitnessManagement.Entities.User", "User")
+                        .WithMany("EquipmentUsages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Equipment");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FitnessManagement.Entities.Attendance", b =>
                 {
                     b.HasOne("FitnessManagement.Entities.User", "User")
@@ -790,6 +899,11 @@ namespace Fitness.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("FitnessManagement.Entities.Equipment", b =>
+                {
+                    b.Navigation("EquipmentUsages");
+                });
+
             modelBuilder.Entity("FitnessManagement.Entities.Package", b =>
                 {
                     b.Navigation("Users");
@@ -808,6 +922,10 @@ namespace Fitness.DataAccess.Migrations
 
             modelBuilder.Entity("FitnessManagement.Entities.User", b =>
                 {
+                    b.Navigation("BmiInfos");
+
+                    b.Navigation("EquipmentUsages");
+
                     b.Navigation("Messages");
 
                     b.Navigation("Payments");

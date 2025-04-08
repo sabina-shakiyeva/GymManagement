@@ -1,4 +1,5 @@
 ﻿using Fitness.Core.Abstraction;
+using Fitness.Entities.Concrete;
 
 namespace FitnessManagement.Entities
 {
@@ -11,5 +12,7 @@ namespace FitnessManagement.Entities
         public bool IsAvailable { get; set; }
         public decimal? Unit { get; set; }
         public string? ImageUrl { get; set; }
+        public ICollection<UserEquipmentUsage> EquipmentUsages { get; set; }
+
     }
 }

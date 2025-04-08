@@ -40,6 +40,8 @@ namespace FitnessManagement.Data
         public DbSet<TrainerSchedule> TrainerSchedules { get; set; }
 
         public DbSet<UserWorkout> UserWorkouts { get; set; }
+        public DbSet<UserBmiInfo> UserBmiInfos { get; set; }
+        public DbSet<UserEquipmentUsage> UserEquipmentUsages { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,7 +49,19 @@ namespace FitnessManagement.Data
         {
             base.OnModelCreating(modelBuilder);
 
-          
+            modelBuilder.Entity<UserEquipmentUsage>()
+       .HasOne(ue => ue.User)
+       .WithMany(u => u.EquipmentUsages)
+       .HasForeignKey(ue => ue.UserId)
+       .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserEquipmentUsage>()
+                .HasOne(ue => ue.Equipment)
+                .WithMany(e => e.EquipmentUsages)
+                .HasForeignKey(ue => ue.EquipmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
             modelBuilder.Entity<User>()
 
            .HasOne(u => u.Package)
@@ -118,6 +132,13 @@ namespace FitnessManagement.Data
     .HasForeignKey(ts => ts.TrainerId)
 
     .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<UserBmiInfo>()
+    .HasOne(u => u.User)
+    .WithMany(u => u.BmiInfos)
+    .HasForeignKey(u => u.UserId);
+
 
 
         }

@@ -62,7 +62,7 @@ namespace FitnessManagement.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] RegisterModel dto)
         {
-            // Yalnız "User" və "Trainer" rollarına icazə verək
+           
             if (dto.Role != "User" && dto.Role != "Trainer")
             {
                 return BadRequest(new { Status = "Error", Message = "Invalid role! Only 'User' and 'Trainer' are allowed." });
@@ -82,7 +82,6 @@ namespace FitnessManagement.Controllers
                 return BadRequest(new { Status = "Error", Message = "Registration failed!", Errors = result.Errors });
             }
 
-            // Rolu yoxlayıb, mövcud deyilsə, yaradıb təyin edirik
             if (!await _roleManager.RoleExistsAsync(dto.Role))
             {
                 await _roleManager.CreateAsync(new IdentityRole(dto.Role));
@@ -92,43 +91,6 @@ namespace FitnessManagement.Controllers
 
             return Ok(new { Status = "Success", Message = $"User registered successfully as {dto.Role}! Waiting for admin approval." });
         }
-
-
-
-
-        //[HttpPost("signup")]
-        //public async Task<IActionResult> SignUp([FromBody] RegisterModel dto)
-        //{
-        //    //if (string.IsNullOrEmpty(dto.Role))
-        //    //{
-        //    //    return BadRequest(new { Status = "Error", Message = "Role is required!" });
-        //    //}
-        //    var user = new ApplicationUser
-        //    {
-        //        UserName = dto.Email,
-        //        Email = dto.Email,
-        //        FullName = dto.FullName,
-
-        //        IsApproved = false 
-        //    };
-
-        //    var result = await _userManager.CreateAsync(user, dto.Password);
-        //    if (result.Succeeded)
-        //    {
-        //        if (!await _roleManager.RoleExistsAsync("User"))
-        //        {
-        //            await _roleManager.CreateAsync(new IdentityRole("User"));
-        //            //await _roleManager.CreateAsync(new IdentityRole(dto.Role));
-        //        }
-
-        //        await _userManager.AddToRoleAsync(user, "User");
-
-        //        return Ok(new { Status = "Success", Message = $"User registered successfully! Waiting for admin approval." });
-        //    }
-
-        //    return BadRequest(new { Status = "Error", Message = "Registration failed!", Errors = result.Errors });
-        //}
-
 
 
 

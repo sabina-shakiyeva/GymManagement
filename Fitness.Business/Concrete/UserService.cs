@@ -127,7 +127,6 @@ namespace Fitness.Business.Concrete
         }
 
 
-
         public async Task AddUser(UserDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
@@ -332,6 +331,27 @@ namespace Fitness.Business.Concrete
 
             return userDto; 
         }
+
+        public async Task<List<TopUserDto>> GetTop10UsersByPointsAsync()
+        {
+            var users = await _userDal.GetList();
+
+            var topUsers = users
+                .OrderByDescending(u => u.Point)
+                .Take(10)
+                .Select(u => new TopUserDto
+                {
+                    UserId = u.Id,
+                    Name = u.Name,
+                    Point = u.Point 
+                })
+                .ToList();
+
+            return topUsers;
+        }
+
+
+
 
     }
 }
