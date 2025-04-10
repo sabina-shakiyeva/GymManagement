@@ -2,6 +2,7 @@
 using Fitness.DataAccess.Abstract;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
+using FitnessManagement.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +58,32 @@ namespace Fitness.Business.Concrete
                 await _userDal.Update(user);
             }
         }
+        public async Task<List<EquipmentUsageGetDto>> GetAllEquipmentUsages()
+        {
+            var usages = await _usageDal.GetList();
+
+            var usageDtos = new List<EquipmentUsageGetDto>();
+
+            foreach (var usage in usages)
+            {
+                var equipment = await _equipmentDal.Get(e => e.Id == usage.EquipmentId);
+                var user = await _userDal.Get(u => u.Id == usage.UserId);
+
+                usageDtos.Add(new EquipmentUsageGetDto
+                {
+                    UserId = usage.UserId,
+                    EquipmentId = usage.EquipmentId,
+                    DurationInMinutes = usage.DurationInMinutes,
+                    Repetition = usage.Repetition,
+                    Date = usage.Date,
+                    EquipmentName = equipment?.Name,
+                    UserName = user?.Name
+                });
+            }
+
+            return usageDtos;
+        }
+
 
         public async Task<List<UserEquipmentUsage>> GetAllByUserIdAsync(int userId)
         {
@@ -67,12 +94,14 @@ namespace Fitness.Business.Concrete
             var usages = await _usageDal.GetList(u => u.UserId == userId);
 
             var grouped = usages
+                .Where(u => u.UserId != 0)
                 .GroupBy(u => u.EquipmentId)
                 .Select(g => new EquipmentUsageStatDto
                 {
                     EquipmentId = g.Key,
                     DurationInMinutes = g.Sum(x => x.DurationInMinutes) ?? 0,
-                    Repetition = g.Sum(x => x.Repetition) ?? 0
+                    Repetition = g.Sum(x => x.Repetition) ?? 0,
+                    UserId = g.FirstOrDefault()?.UserId ?? default(int)
                 }).ToList();
 
             foreach (var stat in grouped)

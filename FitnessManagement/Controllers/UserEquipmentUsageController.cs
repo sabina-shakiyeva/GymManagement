@@ -24,12 +24,10 @@ namespace FitnessManagement.Controllers
             if (dto == null)
                 return BadRequest("Usage info is required.");
 
-            // Əlavə məlumatı əlavə edirik və puan hesablama ilə yeniləyirik
             await _usageService.AddAsync(dto);
 
             return Ok("Usage data saved and points updated.");
         }
-
 
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUserUsageHistory(int userId)
@@ -37,11 +35,19 @@ namespace FitnessManagement.Controllers
             var result = await _usageService.GetAllByUserIdAsync(userId);
             return Ok(result);
         }
+
         [HttpGet("stats/user/{userId}")]
         public async Task<IActionResult> GetUserUsageStats(int userId)
         {
             var stats = await _usageService.GetUsageStatsByUserIdAsync(userId);
             return Ok(stats);
         }
+        [HttpGet("all-usages")]
+        public async Task<IActionResult> GetAllUsages()
+        {
+            var result = await _usageService.GetAllEquipmentUsages();
+            return Ok(result);
+        }
+
     }
 }

@@ -6,6 +6,7 @@ using Fitness.DataAccess.Concrete.EfEntityFramework;
 using Fitness.Entities.Concrete;
 using FitnessManagement.Data;
 using FitnessManagement.Entities;
+using FitnessManagement.Hubs;
 using FitnessManagement.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -24,7 +25,7 @@ builder.Services.AddAutoMapper(typeof(Mapper));
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
-
+builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
@@ -37,6 +38,8 @@ builder.Services.AddCors(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IAdminDal, EfAdminDal>();
 builder.Services.AddScoped<ITrainerDal, EfTrainerDal>();
@@ -51,6 +54,8 @@ builder.Services.AddScoped<ITrainerService, TrainerService>();
 builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 builder.Services.AddScoped<IPackageService, PackageService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+
 builder.Services.AddScoped<IUserEquipmentUsageService, UserEquipmentUsageService>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -84,6 +89,9 @@ builder.Services.AddDbContext<GymDbContext>(options => options.UseSqlServer(conn
 var app = builder.Build();
 
 app.UseCors("AllowLocalhost");
+
+
+app.MapHub<ChatHub>("/chathub");
 
 
 if (app.Environment.IsDevelopment())

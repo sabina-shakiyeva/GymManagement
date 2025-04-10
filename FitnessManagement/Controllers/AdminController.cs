@@ -1,4 +1,5 @@
 ﻿using Fitness.Business.Abstract;
+using Fitness.Business.Concrete;
 using Fitness.DataAccess.Abstract;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
@@ -25,15 +26,17 @@ namespace FitnessManagement.Controllers
         private readonly IUserService _userService;
         private readonly ITrainerService _trainerService;
         private readonly IUserDal _userDal;
+        private readonly IAdminService _adminService;
 
 
 
-        public AdminController(UserManager<ApplicationUser> userManager, IUserService userService, IUserDal userDal, ITrainerService trainerService)
+        public AdminController(UserManager<ApplicationUser> userManager, IUserService userService, IUserDal userDal, ITrainerService trainerService, IAdminService adminService)
         {
             _userManager = userManager;
             _userService = userService;
             _userDal = userDal;
-            _trainerService=trainerService;
+            _trainerService = trainerService;
+            _adminService = adminService;
         }
         [HttpPost("add-user")]
         public async Task<IActionResult> AddUser([FromForm] UserDto userDto)
@@ -69,6 +72,20 @@ namespace FitnessManagement.Controllers
             }
             catch (Exception ex)
             {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        [HttpPut("update-admin/{adminId}")]
+        public async Task<IActionResult> UpdateAdmin(int adminId, [FromForm] AdminUpdateDto adminUpdateDto)
+        {
+            try
+            {
+                await _adminService.UpdateAdminAsync(adminId, adminUpdateDto);
+                return Ok(new { message = "Admin updated successfully" });
+            }
+            catch (Exception ex)
+            {
+              
                 return BadRequest(new { message = ex.Message });
             }
         }

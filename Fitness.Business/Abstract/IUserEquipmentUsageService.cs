@@ -13,5 +13,8 @@ namespace Fitness.Business.Abstract
         Task AddAsync(EquipmentUsageStatDto dto);
         Task<List<UserEquipmentUsage>> GetAllByUserIdAsync(int userId);
         Task<List<EquipmentUsageStatDto>> GetUsageStatsByUserIdAsync(int userId);
+
+        //butun equipmentleri getirsin deye yazdim
+        Task<List<EquipmentUsageGetDto>> GetAllEquipmentUsages();
     }
 }
