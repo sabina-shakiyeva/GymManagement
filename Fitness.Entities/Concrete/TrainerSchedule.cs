@@ -7,5 +7,13 @@
         public Trainer Trainer { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        public LessonType LessonType { get; set; }  
+        public string LessonName { get; set; }
     }
+    public enum LessonType
+    {
+        Group,
+        Individual
+    }
+
 }

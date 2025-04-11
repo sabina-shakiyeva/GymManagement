@@ -349,6 +349,62 @@ namespace Fitness.Business.Concrete
 
             return topUsers;
         }
+        public async Task<UserPackageTrainerDto> GetUserPackageTrainer(int id)
+        {
+            var user = await _userDal.Get(u => u.Id == id, include: q => q
+                .Include(u => u.Package)
+                .Include(u => u.Trainer));
+
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            return new UserPackageTrainerDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Phone = user.Phone,
+                ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null,
+                PackageName = user.Package?.PackageName,
+                PackagePrice = user.Package?.Price,
+                TrainerName = user.Trainer?.Name
+            };
+        }
+
+        public async Task UpdateUserPackageTrainer(int id, UserPackageTrainerUpdateDto dto)
+        {
+            var user = await _userDal.Get(u => u.Id == id);
+
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            if (!string.IsNullOrEmpty(dto.Name))
+                user.Name = dto.Name;
+
+            if (!string.IsNullOrEmpty(dto.Phone))
+                user.Phone = dto.Phone;
+
+            if (dto.PackageId.HasValue)
+                user.PackageId = dto.PackageId;
+
+            if (dto.TrainerId.HasValue)
+                user.TrainerId = dto.TrainerId;
+
+            if (dto.ImageUrl != null)
+            {
+                string imageUrl = await _fileService.UploadFileAsync(dto.ImageUrl);
+                user.ImageUrl = imageUrl;
+            }
+
+            user.UpdatedDate = DateTime.Now;
+
+            await _userDal.Update(user);
+        }
+
+
 
 
 

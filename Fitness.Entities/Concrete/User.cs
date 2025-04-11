@@ -25,7 +25,9 @@ namespace FitnessManagement.Entities
         public int Point { get; set; } = 0;
         public Trainer Trainer { get; set; } 
         public Package Package { get; set; }
-    
+        public DateTime? PackageStartDate { get; set; }
+        public DateTime? PackageEndDate { get; set; }
+
         public ICollection<UserWorkout> UserWorkouts { get; set; }
         public ICollection<Payment> Payments { get; set; }
         public ICollection<Message> Messages { get; set; }

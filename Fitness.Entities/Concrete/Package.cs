@@ -9,5 +9,6 @@ namespace FitnessManagement.Entities
         public int DurationInMonths { get; set; }
         public string? Description { get; set; }
         public ICollection<User> Users { get; set; }
+        public ICollection<Payment> Payments { get; set; }
     }
 }

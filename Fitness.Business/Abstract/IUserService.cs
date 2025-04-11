@@ -21,7 +21,8 @@ namespace Fitness.Business.Abstract
         Task ApproveUser(string userId);
         Task DeclineUser(string userId);
         Task<List<TopUserDto>> GetTop10UsersByPointsAsync();
-
+        Task<UserPackageTrainerDto> GetUserPackageTrainer(int id);
+        Task UpdateUserPackageTrainer(int id, UserPackageTrainerUpdateDto dto);
 
 
 

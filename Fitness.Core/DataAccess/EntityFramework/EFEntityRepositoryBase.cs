@@ -28,6 +28,15 @@ namespace Fitness.Core.DataAccess.EntityFramework
             await _context.SaveChangesAsync();
         }
 
+        public async Task<TEntity> Get(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+            if (include != null)
+                query = include(query);
+
+            return await query.FirstOrDefaultAsync(filter);
+        }
+
         public async Task Delete(TEntity entity)
         {
             var deletedEntity = _context.Entry(entity);
