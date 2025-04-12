@@ -12,5 +12,6 @@ namespace Fitness.Business.Abstract
     {
         Task AddAdminAsync(ApplicationUser admin);
         Task UpdateAdminAsync(int adminId, AdminUpdateDto adminUpdateDto);
+        Task<StatisticsDto> GetStatisticsAsync();
     }
 }

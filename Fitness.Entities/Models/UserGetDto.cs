@@ -17,5 +17,6 @@ namespace Fitness.Entities.Models
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? DateOfBirth { get; set; }
         public string? ImageUrl { get; set; }
+        public int? TrainerId { get; set; }
     }
 }

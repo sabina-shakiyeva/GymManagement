@@ -1,8 +1,11 @@
 ﻿using Fitness.Business.Abstract;
+using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FitnessManagement.Controllers
 {
@@ -12,10 +15,12 @@ namespace FitnessManagement.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, UserManager<ApplicationUser> userManager)
         {
             _userService = userService;
+            _userManager = userManager;
         }
 
         [HttpGet("top-users")]
@@ -51,6 +56,9 @@ namespace FitnessManagement.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+
+     
+     
 
     }
 }

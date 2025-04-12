@@ -262,5 +262,13 @@ namespace FitnessManagement.Controllers
 
         }
 
+        //STATISTIKA
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetStatistics()
+        {
+            var result = await _adminService.GetStatisticsAsync();
+            return Ok(result);
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
+using Fitness.DataAccess.Concrete.EfEntityFramework;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
 using FitnessManagement.Entities;
@@ -18,13 +19,20 @@ namespace Fitness.Business.Concrete
         private readonly IAdminDal _adminDal;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileService _fileService;
+        private readonly IUserDal _userDal;
+        private readonly ITrainerDal _trainerDal;
+        private readonly IEquipmentDal _equipmentDal;
+        private readonly IPackageDal _packageDal;
 
-        public AdminService(IAdminDal adminDal, UserManager<ApplicationUser> userManager, IFileService fileService)
+        public AdminService(IAdminDal adminDal, UserManager<ApplicationUser> userManager, IFileService fileService, IUserDal userDal, ITrainerDal trainerDal, IEquipmentDal equipmentDal, IPackageDal packageDal)
         {
             _adminDal = adminDal;
             _userManager = userManager;
             _fileService = fileService;
-
+            _userDal = userDal;
+            _trainerDal = trainerDal;
+            _equipmentDal = equipmentDal;
+            _packageDal = packageDal;
         }
 
         public async Task AddAdminAsync(ApplicationUser admin)
@@ -103,6 +111,24 @@ namespace Fitness.Business.Concrete
             await _adminDal.Update(admin);
         }
 
+        //STATISTICS (TOTAL SAYILAR)
+        public async Task<StatisticsDto> GetStatisticsAsync()
+        {
+            var userCount = await _userDal.GetList();
+            var trainerCount = await _trainerDal.GetList();
+            var equipmentCount = await _equipmentDal.GetList();
+            var packageCount = await _packageDal.GetList();
+
+            return new StatisticsDto
+            {
+                NumberOfUsers = userCount.Count,
+                NumberOfTrainers = trainerCount.Count,
+                NumberOfEquipments = equipmentCount.Count,
+                NumberOfPackages = packageCount.Count
+            };
+        }
+
+
     }
-    
+
 }

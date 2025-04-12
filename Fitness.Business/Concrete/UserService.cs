@@ -21,15 +21,17 @@ namespace Fitness.Business.Concrete
         private readonly IUserDal _userDal;
         private readonly IMapper _mapper;
         private readonly IFileService _fileService;
+        private readonly ITrainerDal _trainerDal;
         private readonly UserManager<ApplicationUser> _userManager;
        
 
-        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager)
+        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, ITrainerDal trainerDal)
         {
             _userDal = userDal;
             _mapper = mapper;
             _fileService = fileService;
             _userManager = userManager;
+            _trainerDal = trainerDal;
           
 
 
@@ -202,6 +204,7 @@ namespace Fitness.Business.Concrete
 
             await _userDal.Delete(user);
         }
+        //trainer ve paket id yenile
         public async Task UpdateUser(int userId, UserUpdateDto userUpdateDto)
         {
             var user = await _userDal.Get(u => u.Id == userId);
@@ -341,9 +344,11 @@ namespace Fitness.Business.Concrete
                 .Take(10)
                 .Select(u => new TopUserDto
                 {
+
                     UserId = u.Id,
+                    ImageUrl = u.ImageUrl != null ? _fileService.GetFileUrl(u.ImageUrl) : null,
                     Name = u.Name,
-                    Point = u.Point 
+                    Point = u.Point,
                 })
                 .ToList();
 
@@ -371,7 +376,7 @@ namespace Fitness.Business.Concrete
                 TrainerName = user.Trainer?.Name
             };
         }
-
+        //admin trainer ve paketi burada teyin edir
         public async Task UpdateUserPackageTrainer(int id, UserPackageTrainerUpdateDto dto)
         {
             var user = await _userDal.Get(u => u.Id == id);
@@ -405,6 +410,35 @@ namespace Fitness.Business.Concrete
         }
 
 
+        public async Task<List<UserGetDto>> GetUsersByTrainerId(string trainerIdentityId)
+        {
+            var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
+
+            if (trainer == null)
+                throw new Exception("Trainer not found");
+
+            //var users = await _userDal.GetList(u => u.TrainerId == trainer.Id);
+            var users = await _userDal.GetList(
+    u => u.TrainerId == trainer.Id,
+    include: q => q.Include(u => u.Package)
+);
+
+
+            var userDtos = users.Select(user => new UserGetDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                CreatedDate = user.CreatedDate,
+                DateOfBirth = user.DateOfBirth,
+                PackageName = user.Package?.PackageName,
+                TrainerId = user.TrainerId,
+                ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null
+            }).ToList();
+
+            return userDtos;
+        }
 
 
 

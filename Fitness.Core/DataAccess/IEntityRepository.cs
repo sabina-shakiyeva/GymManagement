@@ -13,6 +13,8 @@ namespace Fitness.Core.DataAccess
        
         Task<T> Get(Expression<Func<T, bool>> filter);
         Task<List<T>> GetList(Expression<Func<T, bool>> filter = null);
+        Task<List<T>> GetList(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IQueryable<T>> include);
+
         Task<T> Get(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IQueryable<T>> include);
 
         Task Add(T entity);

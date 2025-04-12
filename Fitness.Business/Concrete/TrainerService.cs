@@ -20,6 +20,7 @@ namespace Fitness.Business.Concrete
     public class TrainerService : ITrainerService
     {
         private readonly ITrainerDal _trainerDal;
+        private readonly IUserDal _userDal;
         private readonly IMapper _mapper;
         private readonly IFileService _fileService;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -343,5 +344,151 @@ namespace Fitness.Business.Concrete
             await _userManager.UpdateAsync(identityUser);
             await _trainerDal.Update(trainer);
         }
+
+        //asagida yazdiqlarim sirf trainer id-ye gorer userlerin get,update,delete olacaq
+
+        public async Task<List<UserGetDto>> GetAllUsersByTrainer(int trainerId)
+        {
+            var users = await _userDal.GetList(u => u.TrainerId == trainerId);
+
+            var userDtos = users.Select(user => new UserGetDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                CreatedDate = user.CreatedDate,
+                DateOfBirth = user.DateOfBirth,
+                ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null
+            }).ToList();
+
+            return userDtos;
+        }
+        public async Task<UserGetDto> GetUserByIdForTrainer(int userId, int trainerId)
+        {
+            var user = await _userDal.Get(u => u.Id == userId && u.TrainerId == trainerId);
+
+            if (user == null)
+                throw new Exception("Bu istifadəçi sizə aid deyil.");
+
+            return new UserGetDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                CreatedDate = user.CreatedDate,
+                DateOfBirth = user.DateOfBirth,
+                ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null
+            };
+        }
+
+
+        public async Task UpdateUserByTrainer(int userId, int trainerId, UserUpdateDto userUpdateDto)
+        {
+            var user = await _userDal.Get(u => u.Id == userId && u.TrainerId == trainerId);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var identityUser = await _userManager.FindByIdAsync(user.IdentityUserId);
+            if (identityUser == null)
+            {
+                throw new Exception("Identity user not found");
+            }
+            if (userUpdateDto.Phone != null)
+            {
+                user.Phone = userUpdateDto.Phone;
+
+            }
+
+            if (!string.IsNullOrEmpty(userUpdateDto.Name))
+            {
+                user.Name = userUpdateDto.Name;
+                identityUser.FullName = userUpdateDto.Name;
+            }
+            if (userUpdateDto.DateOfBirth.HasValue)
+            {
+                user.DateOfBirth = userUpdateDto.DateOfBirth.Value;
+            }
+
+
+            if (!string.IsNullOrEmpty(userUpdateDto.Email))
+            {
+                user.Email = userUpdateDto.Email;
+                identityUser.Email = userUpdateDto.Email;
+                identityUser.UserName = userUpdateDto.Email;
+            }
+
+            if (userUpdateDto.IsApproved)
+            {
+                user.IsApproved = userUpdateDto.IsApproved;
+                identityUser.IsApproved = userUpdateDto.IsApproved;
+            }
+
+
+
+
+            if (userUpdateDto.ImageUrl != null)
+            {
+                string imageUrl = await _fileService.UploadFileAsync(userUpdateDto.ImageUrl);
+                user.ImageUrl = imageUrl;
+            }
+            if (userUpdateDto.IsActive)
+            {
+                user.IsActive = userUpdateDto.IsActive;
+
+            }
+            if (!string.IsNullOrEmpty(userUpdateDto.NewPassword))
+            {
+                if (!string.IsNullOrEmpty(userUpdateDto.CurrentPassword))
+                {
+
+                    var checkPassword = await _userManager.CheckPasswordAsync(identityUser, userUpdateDto.CurrentPassword);
+
+                    if (!checkPassword)
+                    {
+                        throw new Exception("Current password is incorrect!");
+                    }
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
+                    var result = await _userManager.ResetPasswordAsync(identityUser, token, userUpdateDto.NewPassword);
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception("Failed to change password: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                    }
+
+                }
+
+                else
+                {
+                    throw new Exception("Current password is required to change the password!");
+                }
+
+
+            }
+            user.UpdatedDate = DateTime.Now;
+            await _userManager.UpdateAsync(identityUser);
+            await _userDal.Update(user);
+        }
+        public async Task DeleteUserByTrainer(int userId, int trainerId)
+        {
+            var user = await _userDal.Get(u => u.Id == userId && u.TrainerId == trainerId);
+            if (user == null)
+                throw new Exception("Bu istifadəçi sizə aid deyil.");
+
+            var identityUser = await _userManager.FindByIdAsync(user.IdentityUserId);
+            if (identityUser != null)
+            {
+                var result = await _userManager.DeleteAsync(identityUser);
+                if (!result.Succeeded)
+                    throw new Exception("Silinmə zamanı xəta: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+
+            await _userDal.Delete(user);
+        }
+       
+
+
     }
 }

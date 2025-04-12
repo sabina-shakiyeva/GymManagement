@@ -9,6 +9,7 @@ namespace Fitness.Entities.Models
     public class TopUserDto
     {
         public int UserId { get; set; }
+        public string? ImageUrl { get; set; }
         public string Name { get; set; }
         public int Point { get; set; }
     }

@@ -28,7 +28,7 @@ namespace Fitness.Business.Concrete
             if (user == null)
                 throw new Exception("İstifadəçi tapılmadı.");
 
-            // Mövcud paket müddəti bitibsə, aktivliyi false et
+          
             if (user.IsActive && user.PackageEndDate.HasValue && user.PackageEndDate.Value < DateTime.Now)
             {
                 user.IsActive = false;
@@ -38,7 +38,6 @@ namespace Fitness.Business.Concrete
                 await _userDal.Update(user);
             }
 
-            // Hələ də aktivdirsə, yeni paket ala bilməz
             if (user.IsActive)
                 return "İstifadəçinin artıq aktiv paketi var.";
 
@@ -46,11 +45,9 @@ namespace Fitness.Business.Concrete
             if (package == null)
                 throw new Exception("Paket tapılmadı.");
 
-            // Fake ödəniş yoxlaması (simulyasiya)
             if (paymentDto.CardNumber.StartsWith("1111"))
                 throw new Exception("Ödəniş kartı etibarsızdır.");
 
-            // Ödəniş qeydi
             var payment = new Payment
             {
                 UserId = userId,
@@ -60,11 +57,10 @@ namespace Fitness.Business.Concrete
             };
             await _paymentDal.Add(payment);
 
-            // Yeni paket təyin və aktiv et
             user.PackageId = packageId;
             user.IsActive = true;
             user.PackageStartDate = DateTime.Now;
-            user.PackageEndDate = DateTime.Now.AddMonths(package.DurationInMonths); // Ayla hesabladıq!
+            user.PackageEndDate = DateTime.Now.AddMonths(package.DurationInMonths); 
             await _userDal.Update(user);
 
             return "Paket uğurla alındı və aktivləşdirildi.";
