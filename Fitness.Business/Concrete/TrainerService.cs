@@ -26,13 +26,15 @@ namespace Fitness.Business.Concrete
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public TrainerService(ITrainerDal trainerDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public TrainerService(ITrainerDal trainerDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IUserDal userDal)
         {
             _trainerDal = trainerDal;
             _mapper = mapper;
             _fileService = fileService;
             _userManager = userManager;
             _roleManager = roleManager;
+            _userDal = userDal;
+           
         }
 
         public async Task ApproveTrainer(string trainerId)
@@ -198,7 +200,7 @@ namespace Fitness.Business.Concrete
                 var result = await _userManager.DeleteAsync(identityUser);
                 if (!result.Succeeded)
                 {
-                    throw new Exception("Trainer silinərkən xəta baş verdi: " +
+                    throw new Exception("Error occurred during deletion: " +
                         string.Join(", ", result.Errors.Select(e => e.Description)));
                 }
             }
@@ -346,10 +348,19 @@ namespace Fitness.Business.Concrete
         }
 
         //asagida yazdiqlarim sirf trainer id-ye gorer userlerin get,update,delete olacaq
-
-        public async Task<List<UserGetDto>> GetAllUsersByTrainer(int trainerId)
+        public async Task<List<UserGetDto>> GetUsersByTrainerId(string trainerIdentityId)
         {
-            var users = await _userDal.GetList(u => u.TrainerId == trainerId);
+            var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
+
+            if (trainer == null)
+                throw new Exception("Trainer not found");
+
+            //var users = await _userDal.GetList(u => u.TrainerId == trainer.Id);
+            var users = await _userDal.GetList(
+    u => u.TrainerId == trainer.Id,
+    include: q => q.Include(u => u.Package)
+);
+
 
             var userDtos = users.Select(user => new UserGetDto
             {
@@ -359,17 +370,55 @@ namespace Fitness.Business.Concrete
                 Phone = user.Phone,
                 CreatedDate = user.CreatedDate,
                 DateOfBirth = user.DateOfBirth,
+                PackageName = user.Package?.PackageName,
+                TrainerId = user.TrainerId,
                 ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null
             }).ToList();
 
             return userDtos;
         }
-        public async Task<UserGetDto> GetUserByIdForTrainer(int userId, int trainerId)
+
+
+        //public async Task<List<UserGetDto>> GetAllUsersByTrainer(int trainerId)
+        //{
+        //    var users = await _userDal.GetList(u => u.TrainerId == trainerId);
+
+        //    var userDtos = users.Select(user => new UserGetDto
+        //    {
+        //        Id = user.Id,
+        //        Name = user.Name,
+        //        Email = user.Email,
+        //        Phone = user.Phone,
+        //        CreatedDate = user.CreatedDate,
+        //        DateOfBirth = user.DateOfBirth,
+        //        ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null
+        //    }).ToList();
+
+        //    return userDtos;
+        //}
+        public async Task<Trainer> GetTrainerByIdentityId(string identityId)
         {
-            var user = await _userDal.Get(u => u.Id == userId && u.TrainerId == trainerId);
+            var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == identityId);
+
+            if (trainer == null)
+                throw new Exception("Trainer not found");
+
+            return trainer;
+        }
+
+        public async Task<UserGetDto> GetUserByIdForTrainer(int userId, string trainerIdentityId)
+        {
+            var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
+            if (trainer == null)
+                throw new Exception("Trainer not found");
+
+            var user = await _userDal.Get(
+                u => u.Id == userId && u.TrainerId == trainer.Id,
+                include: q => q.Include(u => u.Package)
+            );
 
             if (user == null)
-                throw new Exception("Bu istifadəçi sizə aid deyil.");
+                throw new Exception("User not found or not associated with this trainer");
 
             return new UserGetDto
             {
@@ -379,6 +428,8 @@ namespace Fitness.Business.Concrete
                 Phone = user.Phone,
                 CreatedDate = user.CreatedDate,
                 DateOfBirth = user.DateOfBirth,
+                PackageName = user.Package?.PackageName,
+                TrainerId = user.TrainerId,
                 ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null
             };
         }
@@ -440,6 +491,20 @@ namespace Fitness.Business.Concrete
                 user.IsActive = userUpdateDto.IsActive;
 
             }
+
+            
+
+            // TrainerId ve PackageId 
+            if (userUpdateDto.TrainerId.HasValue)
+            {
+                user.TrainerId = userUpdateDto.TrainerId;
+            }
+
+            if (userUpdateDto.PackageId.HasValue)
+            {
+                user.PackageId = userUpdateDto.PackageId;
+            }
+
             if (!string.IsNullOrEmpty(userUpdateDto.NewPassword))
             {
                 if (!string.IsNullOrEmpty(userUpdateDto.CurrentPassword))
@@ -471,18 +536,19 @@ namespace Fitness.Business.Concrete
             await _userManager.UpdateAsync(identityUser);
             await _userDal.Update(user);
         }
+
         public async Task DeleteUserByTrainer(int userId, int trainerId)
         {
             var user = await _userDal.Get(u => u.Id == userId && u.TrainerId == trainerId);
             if (user == null)
-                throw new Exception("Bu istifadəçi sizə aid deyil.");
+                throw new Exception("This user does not belong to you.");
 
             var identityUser = await _userManager.FindByIdAsync(user.IdentityUserId);
             if (identityUser != null)
             {
                 var result = await _userManager.DeleteAsync(identityUser);
                 if (!result.Succeeded)
-                    throw new Exception("Silinmə zamanı xəta: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                    throw new Exception("Error occurred during deletion: " + string.Join(", ", result.Errors.Select(e => e.Description)));
             }
 
             await _userDal.Delete(user);

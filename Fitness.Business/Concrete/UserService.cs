@@ -410,36 +410,7 @@ namespace Fitness.Business.Concrete
         }
 
 
-        public async Task<List<UserGetDto>> GetUsersByTrainerId(string trainerIdentityId)
-        {
-            var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
-
-            if (trainer == null)
-                throw new Exception("Trainer not found");
-
-            //var users = await _userDal.GetList(u => u.TrainerId == trainer.Id);
-            var users = await _userDal.GetList(
-    u => u.TrainerId == trainer.Id,
-    include: q => q.Include(u => u.Package)
-);
-
-
-            var userDtos = users.Select(user => new UserGetDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Phone = user.Phone,
-                CreatedDate = user.CreatedDate,
-                DateOfBirth = user.DateOfBirth,
-                PackageName = user.Package?.PackageName,
-                TrainerId = user.TrainerId,
-                ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null
-            }).ToList();
-
-            return userDtos;
-        }
-
+     
 
 
 

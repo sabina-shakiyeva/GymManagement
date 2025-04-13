@@ -17,6 +17,9 @@ namespace Fitness.Entities.Models
         public string? Phone { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public IFormFile? ImageUrl { get; set; }
+
+        public int? PackageId { get; set; }
+        public int? TrainerId { get; set; }
         public string? CurrentPassword { get; set; }
         public string? NewPassword { get; set; }
 

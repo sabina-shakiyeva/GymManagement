@@ -1,10 +1,12 @@
 ﻿using Fitness.Business.Abstract;
+using Fitness.DataAccess.Abstract;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace FitnessManagement.Controllers
@@ -15,15 +17,18 @@ namespace FitnessManagement.Controllers
     public class TrainerUserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ITrainerService _trainerService;
+        private readonly IUserDal _userDal;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public TrainerUserController(IUserService userService, UserManager<ApplicationUser> userManager)
+        public TrainerUserController(IUserService userService, ITrainerService trainerService, IUserDal userDal, UserManager<ApplicationUser> userManager)
         {
             _userService = userService;
+            _trainerService = trainerService;
+            _userDal = userDal;
             _userManager = userManager;
         }
 
-     
         [HttpGet("my-users")]
         public async Task<IActionResult> GetMyUsers()
         {
@@ -33,47 +38,57 @@ namespace FitnessManagement.Controllers
             if (trainer == null)
                 return Unauthorized();
 
-            var users = await _userService.GetUsersByTrainerId(trainer.Id);
+            var users = await _trainerService.GetUsersByTrainerId(trainer.Id);
             return Ok(users);
         }
-        [HttpGet("{id}")]
+        [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            string identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var trainer = await _userManager.FindByIdAsync(identityUserId);
+            string identityTrainerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var user = await _userService.GetUserById(id);
-            if (user == null || user.TrainerId.ToString() != trainer.Id)
-                return Forbid();
-
-            return Ok(user);
+            try
+            {
+                var user = await _trainerService.GetUserByIdForTrainer(id, identityTrainerId);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
+
         [HttpPut("{id}")]
+       
         public async Task<IActionResult> UpdateUser(int id, UserUpdateDto dto)
         {
-            string identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var trainer = await _userManager.FindByIdAsync(identityUserId);
+            string identityTrainerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var user = await _userService.GetUserById(id);
-            if (user == null || user.TrainerId.ToString() != trainer.Id)
+            var trainer = await _trainerService.GetTrainerByIdentityId(identityTrainerId);
+            if (trainer == null)
+                return Unauthorized();
+
+            var user = await _trainerService.GetUserByIdForTrainer(id, identityTrainerId);
+            if (user == null || user.TrainerId != trainer.Id)
                 return Forbid();
 
-            await _userService.UpdateUser(id, dto);
+            await _trainerService.UpdateUserByTrainer(id, trainer.Id, dto);
             return NoContent();
         }
+
 
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            string identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var trainer = await _userManager.FindByIdAsync(identityUserId);
+            string identityTrainerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var trainer = await _trainerService.GetTrainerByIdentityId(identityTrainerId);
 
-            var user = await _userService.GetUserById(id);
-            if (user == null || user.TrainerId.ToString() != trainer.Id)
+            var user = await _trainerService.GetUserByIdForTrainer(id, identityTrainerId);
+
+            if (user == null || user.TrainerId != trainer.Id)
                 return Forbid();
 
-            await _userService.DeleteUser(id);
+            await _trainerService.DeleteUserByTrainer(id,trainer.Id);
             return NoContent();
         }
 

@@ -233,7 +233,7 @@ namespace FitnessManagement.Controllers
             }
         }
 
-
+        
 
         [HttpPost("approve-trainer/{trainerId}")]
         public async Task<IActionResult> ApproveTrainer(string trainerId)

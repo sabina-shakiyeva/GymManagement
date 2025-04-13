@@ -26,7 +26,7 @@ namespace Fitness.Business.Concrete
         {
             var user = await _userDal.Get(u => u.Id == userId);
             if (user == null)
-                throw new Exception("İstifadəçi tapılmadı.");
+                throw new Exception("User not found.");
 
           
             if (user.IsActive && user.PackageEndDate.HasValue && user.PackageEndDate.Value < DateTime.Now)
@@ -39,14 +39,14 @@ namespace Fitness.Business.Concrete
             }
 
             if (user.IsActive)
-                return "İstifadəçinin artıq aktiv paketi var.";
+                return "User has already active packet.";
 
             var package = await _packageDal.Get(p => p.Id == packageId);
             if (package == null)
-                throw new Exception("Paket tapılmadı.");
-
+                throw new Exception("Package not found");
+            //payment simulyasiyasini bele ede bilerik ilerileyen zamanlarda
             if (paymentDto.CardNumber.StartsWith("1111"))
-                throw new Exception("Ödəniş kartı etibarsızdır.");
+                throw new Exception("kart etibarsiz.");
 
             var payment = new Payment
             {
@@ -63,7 +63,7 @@ namespace Fitness.Business.Concrete
             user.PackageEndDate = DateTime.Now.AddMonths(package.DurationInMonths); 
             await _userDal.Update(user);
 
-            return "Paket uğurla alındı və aktivləşdirildi.";
+            return "Package is activated succesfully";
         }
 
 
