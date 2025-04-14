@@ -22,7 +22,6 @@ namespace FitnessManagement.Controllers
             return CreatedAtAction(nameof(GetById), new { id = group.Id }, group);
         }
 
-        // 2. ID ilə qrup gətir
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -31,7 +30,7 @@ namespace FitnessManagement.Controllers
             return Ok(group);
         }
 
-        // 3. Qrupu yenilə
+      
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] GroupUpdateDto dto)
         {
@@ -40,7 +39,6 @@ namespace FitnessManagement.Controllers
             return Ok(updated);
         }
 
-        // 4. Qrupu sil
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -49,7 +47,7 @@ namespace FitnessManagement.Controllers
             return NoContent();
         }
 
-        // 5. Qrupa user əlavə et
+      
         [HttpPost("addUser")]
         public async Task<IActionResult> AddUser([FromBody] AddUserToGroupDto dto)
         {

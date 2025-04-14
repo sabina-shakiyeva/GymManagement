@@ -9,8 +9,8 @@ namespace Fitness.Entities.Models.Trainer
     public class TrainerScheduleCreateDto
     {
         public int TrainerId { get; set; }
-        public int? UserId { get; set; }      // Fərdi dərs üçün
-        public int? GroupId { get; set; }     // Qrup dərs üçün
+        public int? UserId { get; set; }     
+        public int? GroupId { get; set; }    
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string Description { get; set; }

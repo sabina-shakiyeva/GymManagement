@@ -3,6 +3,7 @@ using Fitness.DataAccess.Abstract;
 using Fitness.DataAccess.Concrete.EfEntityFramework;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
+using Fitness.Entities.Models.Admin;
 using FitnessManagement.Entities;
 using FitnessManagement.Services;
 using Microsoft.AspNetCore.Identity;
@@ -56,6 +57,25 @@ namespace Fitness.Business.Concrete
 
                 await _adminDal.Add(newAdmin);
             }
+        }
+        public async Task<AdminProfileDto> GetAdminByIdAsync(int id)
+        {
+            var admin = await _adminDal.Get(a => a.Id == id);
+            if (admin == null)
+                throw new Exception("Admin not found");
+
+            var identityUser = await _userManager.FindByIdAsync(admin.IdentityAdminId);
+            if (identityUser == null)
+                throw new Exception("Identity user not found");
+
+            return new AdminProfileDto
+            {
+                Id = admin.Id,
+                Name = admin.Name,
+                Email = admin.Email,
+                ImageUrl = admin.ImageUrl != null ? _fileService.GetFileUrl(admin.ImageUrl) : null,
+              
+            };
         }
 
         public async Task UpdateAdminAsync(int adminId, AdminUpdateDto adminUpdateDto)

@@ -38,6 +38,13 @@ namespace FitnessManagement.Controllers
             _trainerService = trainerService;
             _adminService = adminService;
         }
+        [HttpGet("admin-profile/{id}")]
+        public async Task<IActionResult> GetAdminProfile(int id)
+        {
+            var admin = await _adminService.GetAdminByIdAsync(id);
+            return Ok(admin);
+        }
+
         [HttpPost("add-user")]
         public async Task<IActionResult> AddUser([FromForm] UserDto userDto)
         {
