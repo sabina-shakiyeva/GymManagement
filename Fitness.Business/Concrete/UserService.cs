@@ -354,6 +354,27 @@ namespace Fitness.Business.Concrete
 
             return topUsers;
         }
+        //detayli sekilde gormek ucun asagidakilari yazdim hansiki user artiq hansi pakete uzv oldugunu qiymetini trainer name-i fln admin gore biler ve silib update ede biler
+        public async Task<List<UserPackageTrainerDto>> GetAllUserPackageTrainer()
+        {
+            var users = await _userDal.GetList(
+                filter: null,  
+                include: q => q
+                    .Include(u => u.Package)
+                    .Include(u => u.Trainer)
+            );
+
+            return users.Select(user => new UserPackageTrainerDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Phone = user.Phone,
+                ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null,
+                PackageName = user.Package?.PackageName,
+                PackagePrice = user.Package?.Price,
+                TrainerName = user.Trainer?.Name
+            }).ToList();
+        }
         public async Task<UserPackageTrainerDto> GetUserPackageTrainer(int id)
         {
             var user = await _userDal.Get(u => u.Id == id, include: q => q

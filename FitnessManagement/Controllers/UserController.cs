@@ -1,4 +1,5 @@
 ﻿using Fitness.Business.Abstract;
+using Fitness.Business.Concrete;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +31,12 @@ namespace FitnessManagement.Controllers
             return Ok(topUsers);
         }
         //asagida yazdigim iki endpointde user-in cedvelinde package ve traineri gormesi ucun yazilib
+        [HttpGet("details")]
+        public async Task<IActionResult> GetAllUserPackageTrainer()
+        {
+            var result = await _userService.GetAllUserPackageTrainer();
+            return Ok(result);
+        }
         [HttpGet("{id}/details")]
         public async Task<IActionResult> GetUserPackageTrainer(int id)
         {

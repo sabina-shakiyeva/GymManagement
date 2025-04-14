@@ -23,7 +23,11 @@ namespace Fitness.Business.Abstract
         Task<List<TopUserDto>> GetTop10UsersByPointsAsync();
         Task<UserPackageTrainerDto> GetUserPackageTrainer(int id);
         Task UpdateUserPackageTrainer(int id, UserPackageTrainerUpdateDto dto);
-      
+        Task<List<UserPackageTrainerDto>> GetAllUserPackageTrainer();
+
+
+
+
 
 
 
