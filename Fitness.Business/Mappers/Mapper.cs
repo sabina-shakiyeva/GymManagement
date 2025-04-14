@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Fitness.Entities.Models;
+using Fitness.Entities.Models.Trainer;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using System;
@@ -18,6 +19,8 @@ namespace Fitness.Business.Mappers
             CreateMap<TakeAttendanceDto, Attendance>();
             CreateMap<Package, PackageDto>().ReverseMap();
             CreateMap<Package, PackageGetDto>().ReverseMap();
+            CreateMap<TrainerScheduleCreateDto, TrainerSchedule>();
+            CreateMap<TrainerSchedule, TrainerScheduleDto>();
 
         }
     }

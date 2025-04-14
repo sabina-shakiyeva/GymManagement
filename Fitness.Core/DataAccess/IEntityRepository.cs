@@ -20,6 +20,9 @@ namespace Fitness.Core.DataAccess
         Task Add(T entity);
         Task Update(T entity);
         Task Delete(T entity);
+        Task<T> GetByIdAsync(int id);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+        Task<List<T>> GetAllAsync();
     }
 
 }

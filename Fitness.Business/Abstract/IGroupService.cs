@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Fitness.Entities.Concrete;
+using Fitness.Entities.Models.Group;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +10,10 @@ namespace Fitness.Business.Abstract
 {
     public interface IGroupService
     {
+        Task<Group> CreateGroupAsync(GroupCreateDto dto);
+        Task<Group> GetGroupByIdAsync(int id);
+        Task<Group> UpdateGroupAsync(GroupUpdateDto dto);
+        Task<bool> DeleteGroupAsync(int id);
+        Task<bool> AddUserToGroupAsync(AddUserToGroupDto dto);
     }
 }

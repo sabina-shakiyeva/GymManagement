@@ -49,6 +49,20 @@ namespace FitnessManagement.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<GroupUser>()
+    .HasKey(gu => new { gu.GroupId, gu.UserId });
+
+            modelBuilder.Entity<GroupUser>()
+                .HasOne(gu => gu.Group)
+                .WithMany(g => g.GroupUsers)
+                .HasForeignKey(gu => gu.GroupId);
+
+            modelBuilder.Entity<GroupUser>()
+                .HasOne(gu => gu.User)
+                .WithMany(u => u.GroupUsers)
+                .HasForeignKey(gu => gu.UserId);
+
+
             modelBuilder.Entity<UserEquipmentUsage>()
        .HasOne(ue => ue.User)
        .WithMany(u => u.EquipmentUsages)

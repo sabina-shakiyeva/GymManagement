@@ -74,6 +74,20 @@ namespace Fitness.Core.DataAccess.EntityFramework
             updatedEntity.State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+        public async Task<TEntity> GetByIdAsync(int id)
+        {
+            return await _context.Set<TEntity>().FindAsync(id);
+        }
+
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _context.Set<TEntity>().AnyAsync(predicate);
+        }
+        public async Task<List<TEntity>> GetAllAsync()
+        {
+            return await _context.Set<TEntity>().ToListAsync();
+        }
+
     }
 
 }
