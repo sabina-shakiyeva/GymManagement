@@ -11,9 +11,10 @@ namespace Fitness.Business.Abstract
     public interface IGroupService
     {
         Task<Group> CreateGroupAsync(GroupCreateDto dto);
-        Task<Group> GetGroupByIdAsync(int id);
+        Task<GroupGetDto> GetGroupByIdAsync(int id);
         Task<Group> UpdateGroupAsync(GroupUpdateDto dto);
         Task<bool> DeleteGroupAsync(int id);
         Task<bool> AddUserToGroupAsync(AddUserToGroupDto dto);
+        Task<List<GroupGetDto>> GetAllGroupsAsync();
     }
 }

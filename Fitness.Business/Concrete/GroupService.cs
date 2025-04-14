@@ -2,6 +2,7 @@
 using Fitness.DataAccess.Abstract;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models.Group;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +36,40 @@ namespace Fitness.Business.Concrete
             return group;
         }
 
-        public async Task<Group> GetGroupByIdAsync(int id)
+        public async Task<List<GroupGetDto>> GetAllGroupsAsync()
         {
-            return await _groupDal.GetByIdAsync(id);
+            var groups = await _groupDal.GetList(
+                g => !g.IsDeleted,
+                include: query => query.Include(g => g.Package)
+            );
+
+            return groups.Select(g => new GroupGetDto
+            {
+                Id = g.Id,
+                Name = g.Name,
+                PackageId = g.PackageId,
+                PackageName = g.Package?.PackageName
+            }).ToList();
+        }
+
+
+        public async Task<GroupGetDto> GetGroupByIdAsync(int id)
+        {
+            //return await _groupDal.GetByIdAsync(id);
+            var group = await _groupDal.Get(
+        g => g.Id == id && !g.IsDeleted,
+        include: query => query.Include(g => g.Package)
+    );
+
+            if (group == null) return null;
+
+            return new GroupGetDto
+            {
+                Id = group.Id,
+                Name = group.Name,
+                PackageId = group.PackageId,
+                PackageName = group.Package?.PackageName
+            };
         }
 
         public async Task<Group> UpdateGroupAsync(GroupUpdateDto dto)

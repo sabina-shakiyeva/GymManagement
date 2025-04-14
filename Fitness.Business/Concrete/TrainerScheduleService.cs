@@ -27,7 +27,7 @@ namespace Fitness.Business.Concrete
             {
                 TrainerId = dto.TrainerId,
                 //burada problem var duzelt
-               // GroupId = dto.GroupId,
+                GroupId = dto.GroupId,
                 StartTime = dto.StartTime,
                 EndTime = dto.EndTime
             };

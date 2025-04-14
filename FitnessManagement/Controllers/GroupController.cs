@@ -19,18 +19,25 @@ namespace FitnessManagement.Controllers
         public async Task<IActionResult> Create([FromBody] GroupCreateDto dto)
         {
             var group = await _groupService.CreateGroupAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = group.Id }, group);
+            return CreatedAtAction(nameof(GetGroupById), new { id = group.Id }, group);
         }
-
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetGroupById(int id)
         {
-            var group = await _groupService.GetGroupByIdAsync(id);
-            if (group == null) return NotFound();
-            return Ok(group);
+            var result = await _groupService.GetGroupByIdAsync(id);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+        [HttpGet("all-groups")]
+        public async Task<IActionResult> GetAllGroups()
+        {
+            var result = await _groupService.GetAllGroupsAsync();
+            return Ok(result);
         }
 
-      
+
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] GroupUpdateDto dto)
         {
