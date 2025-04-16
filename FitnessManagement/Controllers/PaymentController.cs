@@ -10,10 +10,14 @@ namespace FitnessManagement.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
+        private readonly IUserService _userService;
 
-        public PaymentController(IPaymentService paymentService)
+        public PaymentController(IPaymentService paymentService, IUserService userService)
         {
             _paymentService = paymentService;
+            _userService = userService;
+
+
         }
 
         [HttpPost("buy-package")]
@@ -28,6 +32,12 @@ namespace FitnessManagement.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+        }
+        [HttpGet("payments")]
+        public async Task<IActionResult> GetAllUserPackageTrainer()
+        {
+            var result = await _userService.GetAllUserPackageTrainer();
+            return Ok(result);
         }
     }
 }

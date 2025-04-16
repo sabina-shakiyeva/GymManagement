@@ -11,7 +11,7 @@ namespace Fitness.Entities.Concrete
 {
     public class Group: BaseEntity, IEntity
     {
-        [Required]
+       
         public string Name { get; set; }
         public int PackageId { get; set; } 
         public Package Package { get; set; } 

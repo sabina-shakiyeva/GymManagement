@@ -358,11 +358,11 @@ namespace Fitness.Business.Concrete
         public async Task<List<UserPackageTrainerDto>> GetAllUserPackageTrainer()
         {
             var users = await _userDal.GetList(
-                filter: null,  
-                include: q => q
-                    .Include(u => u.Package)
-                    .Include(u => u.Trainer)
-            );
+    filter: u => u.PackageId != null,  
+    include: q => q
+        .Include(u => u.Package)
+        .Include(u => u.Trainer)
+);
 
             return users.Select(user => new UserPackageTrainerDto
             {

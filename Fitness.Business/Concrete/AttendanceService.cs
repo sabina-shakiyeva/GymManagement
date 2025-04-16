@@ -42,12 +42,46 @@ namespace Fitness.Business.Concrete
                 }).ToList();
         }
 
+        //public async Task TakeAttendanceAsync(TakeAttendanceDto dto)
+        //{
+        //    var attendance = _mapper.Map<Attendance>(dto);
+        //    attendance.AttendanceDate = dto.AttendanceDate.Date;
+        //    await _attendanceDal.Add(attendance);
+        //}
+
+
         public async Task TakeAttendanceAsync(TakeAttendanceDto dto)
+
         {
-            var attendance = _mapper.Map<Attendance>(dto);
-            attendance.AttendanceDate = dto.AttendanceDate.Date;
-            await _attendanceDal.Add(attendance);
+
+            var existingAttendance = await _attendanceDal.GetList(a => a.UserId == dto.UserId && a.AttendanceDate.Date == dto.AttendanceDate.Date);
+
+            if (existingAttendance.Any())
+
+            {
+
+                var attendance = existingAttendance.First();
+
+                attendance.Status = dto.Status;
+
+                await _attendanceDal.Update(attendance);
+
+            }
+
+            else
+
+            {
+
+                var attendance = _mapper.Map<Attendance>(dto);
+
+                attendance.AttendanceDate = dto.AttendanceDate.Date;
+
+                await _attendanceDal.Add(attendance);
+
+            }
+
         }
+
 
         public async Task<List<AttendanceGetDto>> GetAttendanceList()
         {
