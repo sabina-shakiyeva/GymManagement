@@ -1,4 +1,6 @@
-﻿namespace Fitness.Entities.Models.Trainer
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Fitness.Entities.Models.Trainer
 {
     public class TrainerScheduleDto
     {
@@ -6,7 +8,9 @@
         public int? TrainerId { get; set; }
         public int? UserId { get; set; }
         public int GroupId { get; set; }
+        [DataType(DataType.Date)]
         public DateTime StartTime { get; set; }
+        [DataType(DataType.Date)]
         public DateTime EndTime { get; set; }
         public string Description { get; set; }
     }

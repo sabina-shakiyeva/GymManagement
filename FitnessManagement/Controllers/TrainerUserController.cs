@@ -41,6 +41,7 @@ namespace FitnessManagement.Controllers
             var users = await _trainerService.GetUsersByTrainerId(trainer.Id);
             return Ok(users);
         }
+
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {

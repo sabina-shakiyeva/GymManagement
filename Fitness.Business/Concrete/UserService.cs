@@ -23,9 +23,11 @@ namespace Fitness.Business.Concrete
         private readonly IFileService _fileService;
         private readonly ITrainerDal _trainerDal;
         private readonly UserManager<ApplicationUser> _userManager;
-       
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, ITrainerDal trainerDal)
+
+
+        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, ITrainerDal trainerDal, RoleManager<IdentityRole> roleManager)
         {
             _userDal = userDal;
             _mapper = mapper;
@@ -358,7 +360,28 @@ namespace Fitness.Business.Concrete
         public async Task<List<UserPackageTrainerDto>> GetAllUserPackageTrainer()
         {
             var users = await _userDal.GetList(
-    filter: u => u.PackageId != null,  
+    filter: null,  
+    include: q => q
+        .Include(u => u.Package)
+        .Include(u => u.Trainer)
+);
+
+            return users.Select(user => new UserPackageTrainerDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Phone = user.Phone,
+                ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null,
+                PackageName = user.Package?.PackageName,
+                PackagePrice = user.Package?.Price,
+                TrainerName = user.Trainer?.Name
+            }).ToList();
+        }
+        //PAYMENT
+        public async Task<List<UserPackageTrainerDto>> GetPayments()
+        {
+            var users = await _userDal.GetList(
+    filter: u => u.PackageId != null,
     include: q => q
         .Include(u => u.Package)
         .Include(u => u.Trainer)

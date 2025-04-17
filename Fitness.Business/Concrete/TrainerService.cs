@@ -36,7 +36,21 @@ namespace Fitness.Business.Concrete
             _userDal = userDal;
            
         }
+        //public async Task<StatisticsDto> GetStatisticsAsync()
+        //{
+        //    var userCount = await _userDal.GetList();
+        //    var trainerCount = await _trainerDal.GetList();
+        //    var equipmentCount = await _equipmentDal.GetList();
+        //    var packageCount = await _packageDal.GetList();
 
+        //    return new StatisticsDto
+        //    {
+        //        NumberOfUsers = userCount.Count,
+        //        NumberOfTrainers = trainerCount.Count,
+        //        NumberOfEquipments = equipmentCount.Count,
+        //        NumberOfPackages = packageCount.Count
+        //    };
+        //}
         public async Task ApproveTrainer(string trainerId)
         {
             
@@ -225,7 +239,7 @@ namespace Fitness.Business.Concrete
 
             return trainerDtos;
         }
-
+        //TRAINER PROFILE
         public async Task<TrainerGetDto> GetTrainerById(int id)
         {
             var trainer = await _trainerDal.Get(t => t.Id == id);
@@ -348,6 +362,11 @@ namespace Fitness.Business.Concrete
         }
 
         //asagida yazdiqlarim sirf trainer id-ye gorer userlerin get,update,delete olacaq
+
+        //MY MEMBERS
+
+
+        //Get All My members
         public async Task<List<UserGetDto>> GetUsersByTrainerId(string trainerIdentityId)
         {
             var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
@@ -396,6 +415,7 @@ namespace Fitness.Business.Concrete
 
         //    return userDtos;
         //}
+
         public async Task<Trainer> GetTrainerByIdentityId(string identityId)
         {
             var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == identityId);
@@ -434,7 +454,7 @@ namespace Fitness.Business.Concrete
             };
         }
 
-
+        //Trainere aid userlerin update olunmasi
         public async Task UpdateUserByTrainer(int userId, int trainerId, UserUpdateDto userUpdateDto)
         {
             var user = await _userDal.Get(u => u.Id == userId && u.TrainerId == trainerId);
@@ -536,7 +556,7 @@ namespace Fitness.Business.Concrete
             await _userManager.UpdateAsync(identityUser);
             await _userDal.Update(user);
         }
-
+        //trainere aid userlerin delete olunmasi
         public async Task DeleteUserByTrainer(int userId, int trainerId)
         {
             var user = await _userDal.Get(u => u.Id == userId && u.TrainerId == trainerId);

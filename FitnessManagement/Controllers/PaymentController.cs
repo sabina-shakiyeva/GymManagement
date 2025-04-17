@@ -36,7 +36,7 @@ namespace FitnessManagement.Controllers
         [HttpGet("payments")]
         public async Task<IActionResult> GetAllUserPackageTrainer()
         {
-            var result = await _userService.GetAllUserPackageTrainer();
+            var result = await _userService.GetPayments();
             return Ok(result);
         }
     }
