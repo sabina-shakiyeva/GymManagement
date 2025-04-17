@@ -1,5 +1,6 @@
 ﻿using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
+using Fitness.Entities.Models.Trainer;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using System;
@@ -27,8 +28,15 @@ namespace Fitness.Business.Abstract
         Task<UserGetDto> GetUserByIdForTrainer(int userId, string trainerIdentityId);
         Task UpdateUserByTrainer(int userId, int trainerId, UserUpdateDto userUpdateDto);
         Task DeleteUserByTrainer(int userId, int trainerId);
-       
-       
+        //STATISTIKA UCUN SAYLAR
+        Task<TrainerStatisticsDto> GetTrainerStatisticsAsync(string trainerIdentityId);
+        //Attendance
+        Task<List<AttendanceGetDto>> GetTrainerAttendanceListAsync(string trainerIdentityId);
+
+        Task TakeAttendanceByTrainerAsync(string trainerIdentityId, TakeAttendanceDto dto);
+
+
+
 
     }
 }

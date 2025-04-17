@@ -4,6 +4,7 @@ using Fitness.DataAccess.Abstract;
 using Fitness.DataAccess.Concrete.EfEntityFramework;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
+using Fitness.Entities.Models.Trainer;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using FitnessManagement.Services;
@@ -21,12 +22,15 @@ namespace Fitness.Business.Concrete
     {
         private readonly ITrainerDal _trainerDal;
         private readonly IUserDal _userDal;
+        private readonly IEquipmentDal _equipmentDal;
+        private readonly IPackageDal _packageDal;
         private readonly IMapper _mapper;
         private readonly IFileService _fileService;
+        private readonly IAttendanceDal _attendanceDal;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public TrainerService(ITrainerDal trainerDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IUserDal userDal)
+        public TrainerService(ITrainerDal trainerDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IUserDal userDal, IEquipmentDal equipmentDal, IPackageDal packageDal, IAttendanceDal attendanceDal)
         {
             _trainerDal = trainerDal;
             _mapper = mapper;
@@ -34,8 +38,96 @@ namespace Fitness.Business.Concrete
             _userManager = userManager;
             _roleManager = roleManager;
             _userDal = userDal;
-           
+            _equipmentDal = equipmentDal;
+            _packageDal = packageDal;
+            _attendanceDal = attendanceDal;
         }
+        //Say statistikasi
+        public async Task<TrainerStatisticsDto> GetTrainerStatisticsAsync(string trainerIdentityId)
+        {
+            var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
+
+            if (trainer == null)
+                throw new Exception("Trainer not found");
+
+            var myUsers = await _userDal.GetList(u => u.TrainerId == trainer.Id);
+
+           
+            var allUsers = await _userDal.GetList();
+
+            
+            var allEquipments = await _equipmentDal.GetList();
+
+            
+            var allPackages = await _packageDal.GetList();
+
+            return new TrainerStatisticsDto
+            {
+                TotalMember = allUsers.Count,
+                TotalMyMember = myUsers.Count,
+                TotalEquipment = allEquipments.Count,
+                NumberOfPackages = allPackages.Count
+            };
+        }
+        //Trainer-in oz user attendance lerini gorur
+        public async Task<List<AttendanceGetDto>> GetTrainerAttendanceListAsync(string trainerIdentityId)
+        {
+            var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
+
+            if (trainer == null)
+                throw new Exception("Trainer not found");
+
+            var users = await _userDal.GetList(
+                filter: u => u.IsActive && u.TrainerId == trainer.Id,
+                include: q => q.Include(u => u.Package)
+            );
+
+            return users.Select(user => new AttendanceGetDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Phone = user.Phone,
+                ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null,
+                PackageName = user.Package?.PackageName
+            }).ToList();
+        }
+        //Trainer oz userlerini attendance-lerini qeyd ede bilir burada
+        public async Task TakeAttendanceByTrainerAsync(string trainerIdentityId, TakeAttendanceDto dto)
+        {
+           
+            var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
+
+            if (trainer == null)
+                throw new Exception("Trainer not found");
+
+           
+            var user = await _userDal.Get(u => u.Id == dto.UserId && u.TrainerId == trainer.Id);
+
+            if (user == null)
+                throw new Exception("You are not authorized to take attendance for this user.");
+
+           
+            var existingAttendance = await _attendanceDal.GetList(
+                a => a.UserId == dto.UserId && a.AttendanceDate.Date == dto.AttendanceDate.Date
+            );
+
+            if (existingAttendance.Any())
+            {
+                var attendance = existingAttendance.First();
+                attendance.Status = dto.Status;
+                await _attendanceDal.Update(attendance);
+            }
+            else
+            {
+                var attendance = _mapper.Map<Attendance>(dto);
+                attendance.AttendanceDate = dto.AttendanceDate.Date;
+                await _attendanceDal.Add(attendance);
+            }
+        }
+
+        //
+
+
         //public async Task<StatisticsDto> GetStatisticsAsync()
         //{
         //    var userCount = await _userDal.GetList();

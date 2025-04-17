@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class AttendanceController : ControllerBase
     {
