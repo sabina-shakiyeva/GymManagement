@@ -179,9 +179,15 @@ namespace Fitness.Business.Concrete
 
             await _userDal.Add(user);
 
-            await _userManager.AddToRoleAsync(identityUser,"User");
-         
-           
+            //await _userManager.AddToRoleAsync(identityUser,"User");
+
+            if (!await _roleManager.RoleExistsAsync("User"))
+            {
+
+                await _roleManager.CreateAsync(new IdentityRole("User"));
+            }
+
+
 
         }
         public async Task DeleteUser(int userId)

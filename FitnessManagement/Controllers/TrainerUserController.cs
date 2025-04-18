@@ -58,6 +58,7 @@ namespace FitnessManagement.Controllers
             }
         }
 
+
         [HttpPut("{id}")]
        
         public async Task<IActionResult> UpdateUser(int id, UserUpdateDto dto)

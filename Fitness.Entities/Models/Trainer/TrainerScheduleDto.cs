@@ -8,10 +8,10 @@ namespace Fitness.Entities.Models.Trainer
         public int? TrainerId { get; set; }
         public int? UserId { get; set; }
         public int GroupId { get; set; }
-        [DataType(DataType.Date)]
-        public DateTime StartTime { get; set; }
-        [DataType(DataType.Date)]
-        public DateTime EndTime { get; set; }
+        public DayOfWeek DayOfWeek { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
+
         public string Description { get; set; }
     }
 }

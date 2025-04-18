@@ -1,6 +1,7 @@
 using Fitness.Business.Abstract;
 using Fitness.Business.Concrete;
 using Fitness.Business.Mappers;
+using Fitness.Business.Middlewares;
 using Fitness.DataAccess.Abstract;
 using Fitness.DataAccess.Concrete.EfEntityFramework;
 using Fitness.Entities.Concrete;
@@ -106,8 +107,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
+
+
 
 app.UseAuthentication();
 app.UseAuthorization();

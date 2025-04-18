@@ -6,36 +6,65 @@ using FitnessManagement.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Fitness.Business.Concrete
 {
-    public class TrainerScheduleService:ITrainerScheduleService
+    public class TrainerScheduleService : ITrainerScheduleService
     {
         private readonly ITrainerScheduleDal _trainerScheduleDal;
         private readonly IMapper _mapper;
 
-        public TrainerScheduleService(ITrainerScheduleDal trainerScheduleDal,IMapper mapper)
+        public TrainerScheduleService(ITrainerScheduleDal trainerScheduleDal, IMapper mapper)
         {
             _trainerScheduleDal = trainerScheduleDal;
             _mapper = mapper;
         }
+
+
+      
+
         public async Task<TrainerScheduleDto> CreateScheduleAsync(TrainerScheduleCreateDto dto)
         {
+            bool isUserProvided = dto.UserId.HasValue;
+            bool isGroupProvided = dto.GroupId.HasValue;
+
+            if (isUserProvided == isGroupProvided) 
+                throw new InvalidOperationException("Yalnız UserId və ya GroupId təyin olunmalıdır.");
+
+           
+            var startTime = new TimeOnly(dto.StartTime.Hour, dto.StartTime.Minute);
+            var endTime = new TimeOnly(dto.EndTime.Hour, dto.EndTime.Minute);
+
+            var conflicts = await _trainerScheduleDal.GetList(s =>
+                s.TrainerId == dto.TrainerId &&
+                s.DayOfWeek == dto.DayOfWeek &&
+                (
+                    (startTime >= s.StartTime && startTime < s.EndTime) ||
+                    (endTime > s.StartTime && endTime <= s.EndTime) ||
+                    (startTime <= s.StartTime && endTime >= s.EndTime)
+                )
+            );
+
+            if (conflicts.Any())
+                throw new InvalidOperationException("Bu tarixdə artıq təyin olunmuş dərs mövcuddur.");
+
+           
             var schedule = new TrainerSchedule
             {
                 TrainerId = dto.TrainerId,
-                //burada problem var duzelt
                 UserId = dto.UserId,
                 GroupId = dto.GroupId,
-                StartTime = dto.StartTime,
-                EndTime = dto.EndTime
+                DayOfWeek = dto.DayOfWeek,
+                StartTime = startTime,
+                EndTime = endTime,
+                Description = dto.Description
             };
 
             await _trainerScheduleDal.Add(schedule);
             return _mapper.Map<TrainerScheduleDto>(schedule);
         }
+
 
         public async Task<List<TrainerScheduleDto>> GetAllAsync()
         {
@@ -60,6 +89,7 @@ namespace Fitness.Business.Concrete
             var list = await _trainerScheduleDal.GetList(s => s.GroupId == groupId);
             return _mapper.Map<List<TrainerScheduleDto>>(list);
         }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var entity = await _trainerScheduleDal.GetByIdAsync(id);
@@ -74,8 +104,28 @@ namespace Fitness.Business.Concrete
             var entity = await _trainerScheduleDal.GetByIdAsync(dto.Id);
             if (entity == null) return null;
 
-            entity.StartTime = dto.StartTime;
-            entity.EndTime = dto.EndTime;
+           
+            var startTime = new TimeOnly(dto.StartTime.Hour, dto.StartTime.Minute);
+            var endTime = new TimeOnly(dto.EndTime.Hour, dto.EndTime.Minute);
+
+          
+            var conflicts = await _trainerScheduleDal.GetList(s =>
+                s.Id != dto.Id &&
+                s.TrainerId == entity.TrainerId &&
+                s.DayOfWeek == dto.DayOfWeek &&
+                (
+                    (startTime >= s.StartTime && startTime < s.EndTime) ||
+                    (endTime > s.StartTime && endTime <= s.EndTime) ||
+                    (startTime <= s.StartTime && endTime >= s.EndTime)
+                )
+            );
+
+            if (conflicts.Any())
+                throw new InvalidOperationException("Bu vaxt aralığında artıq dərs təyin olunub.");
+
+            entity.DayOfWeek = dto.DayOfWeek;
+            entity.StartTime = startTime;
+            entity.EndTime = endTime;
             entity.Description = dto.Description;
 
             await _trainerScheduleDal.Update(entity);
@@ -84,4 +134,10 @@ namespace Fitness.Business.Concrete
 
     }
 }
-    
+
+
+
+
+
+
+

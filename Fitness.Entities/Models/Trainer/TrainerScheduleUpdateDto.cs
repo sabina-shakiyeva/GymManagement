@@ -10,10 +10,12 @@ namespace Fitness.Entities.Models.Trainer
     public class TrainerScheduleUpdateDto
     {
         public int Id { get; set; }
-        [DataType(DataType.Date)]
-        public DateTime StartTime { get; set; }
-        [DataType(DataType.Date)]
-        public DateTime EndTime { get; set; }
+        public DayOfWeek DayOfWeek { get; set; }
+        //public TimeOnly StartTime { get; set; }
+        //public TimeOnly EndTime { get; set; }
+        public TimeComponentDto StartTime { get; set; }
+        public TimeComponentDto EndTime { get; set; }
+
         public string Description { get; set; }
     }
 }
