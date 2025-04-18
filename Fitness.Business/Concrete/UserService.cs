@@ -255,8 +255,17 @@ namespace Fitness.Business.Concrete
                 user.IsApproved = userUpdateDto.IsApproved;
                 identityUser.IsApproved = userUpdateDto.IsApproved;
             }
+            if (userUpdateDto.PackageId.HasValue)
+            {
+                user.PackageId = userUpdateDto.PackageId.Value;
+            }
 
-            
+            if (userUpdateDto.TrainerId.HasValue)
+            {
+                user.TrainerId = userUpdateDto.TrainerId.Value;
+            }
+
+
 
 
             if (userUpdateDto.ImageUrl != null)
@@ -316,6 +325,8 @@ namespace Fitness.Business.Concrete
                 Phone = user.Phone,
                 CreatedDate = user.CreatedDate,
                 DateOfBirth = user.DateOfBirth,
+                PackageId= user.PackageId,
+                TrainerId=user.TrainerId,
                 ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null
             }).ToList();
 

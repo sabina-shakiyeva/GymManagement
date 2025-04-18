@@ -18,5 +18,6 @@ namespace Fitness.Entities.Models
         public DateTime? DateOfBirth { get; set; }
         public string? ImageUrl { get; set; }
         public int? TrainerId { get; set; }
+        public int? PackageId { get; set; }
     }
 }
