@@ -1,4 +1,6 @@
-﻿using Fitness.Entities.Models.Trainer;
+﻿using Fitness.Entities.Models;
+using Fitness.Entities.Models.Group;
+using Fitness.Entities.Models.Trainer;
 using FitnessManagement.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,9 @@ namespace Fitness.Business.Abstract
         Task<List<TrainerScheduleDto>> GetByGroupIdAsync(int groupId);
         Task<bool> DeleteAsync(int id);
         Task<TrainerScheduleDto> UpdateAsync(TrainerScheduleUpdateDto dto);
+        Task<List<TrainerScheduleDto>> GetSchedulesByTrainerIdentityIdAsync(string identityTrainerId);
+        Task<List<GroupGetDto>> GetGroupsByTrainerIdentityIdAsync(string trainerIdentityId);
+        Task<List<UserGetDto>> GetUsersInTrainerGroupAsync(string trainerIdentityId, int groupId);
 
 
 

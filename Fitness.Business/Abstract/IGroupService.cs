@@ -1,4 +1,5 @@
 ﻿using Fitness.Entities.Concrete;
+using Fitness.Entities.Models;
 using Fitness.Entities.Models.Group;
 using System;
 using System.Collections.Generic;
@@ -16,5 +17,6 @@ namespace Fitness.Business.Abstract
         Task<bool> DeleteGroupAsync(int id);
         Task<bool> AddUserToGroupAsync(AddUserToGroupDto dto);
         Task<List<GroupGetDto>> GetAllGroupsAsync();
+        Task<List<UserGetDto>> GetUsersByGroupIdAsync(int groupId);
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Fitness.Business.Abstract;
 using Fitness.Entities.Models.Trainer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FitnessManagement.Controllers
 {
@@ -15,6 +17,7 @@ namespace FitnessManagement.Controllers
         {
             _trainerScheduleService = trainerScheduleService;
         }
+        //admin-de asagidakilar olacaq
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] TrainerScheduleCreateDto dto)
@@ -77,6 +80,19 @@ namespace FitnessManagement.Controllers
                 return NotFound();
             return Ok(updated);
         }
+        //Bu ise trainerin oz cedvelini gormesi ucundu
+        [Authorize(Roles = "Trainer")]
+        [HttpGet("myschedules")]
+        public async Task<IActionResult> GetMySchedules()
+        {
+            var identityTrainerId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+
+            var schedules = await _trainerScheduleService.GetSchedulesByTrainerIdentityIdAsync(identityTrainerId);
+            return Ok(schedules);
+        }
+
+     
+
 
     }
 }

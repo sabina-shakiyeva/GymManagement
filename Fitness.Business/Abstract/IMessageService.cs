@@ -1,4 +1,5 @@
-﻿using FitnessManagement.Entities;
+﻿using FitnessManagement.Dtos;
+using FitnessManagement.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace Fitness.Business.Abstract
 {
     public interface IMessageService
     {
-        Task SaveMessageAsync(Message message);
-        Task<List<Message>> GetChatHistoryAsync(int userId, int receiverId);
+        void SaveMessage(MessageDto message);
+        List<MessageDto> GetMessages(string user);
+        List<string> GetAllGuests();
     }
 }

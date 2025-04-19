@@ -1,39 +1,35 @@
 ﻿using Fitness.Business.Abstract;
-using FitnessManagement.Data;
+using Fitness.DataAccess.Abstract;
+using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
 
-namespace Fitness.Business.Concrete
+public class MessageService : IMessageService
 {
-    public class MessageService:IMessageService
+    private readonly ConcurrentDictionary<string, List<MessageDto>> _messages = new();
+    private readonly HashSet<string> _guestIds = new();
+
+    public void SaveMessage(MessageDto message)
     {
-        private readonly GymDbContext _context;
+        _guestIds.Add(message.Sender == "admin" ? message.Receiver : message.Sender);
 
-        public MessageService(GymDbContext context)
-        {
-            _context = context;
-        }
+        var key = message.Sender == "admin" ? message.Receiver : message.Sender;
 
-        public async Task SaveMessageAsync(Message message)
-        {
-            _context.Messages.Add(message);
-            await _context.SaveChangesAsync();
-        }
+        if (!_messages.ContainsKey(key))
+            _messages[key] = new List<MessageDto>();
 
-        public async Task<List<Message>> GetChatHistoryAsync(int userId, int receiverId)
-        {
-            return await _context.Messages
-                .Where(m =>
-                    (m.SenderId == userId && m.ReceiverId == receiverId) ||
-                    (m.SenderId == receiverId && m.ReceiverId == userId))
-                .OrderBy(m => m.SentAt)
-                .ToListAsync();
-        }
+        _messages[key].Add(message);
+    }
 
+    public List<MessageDto> GetMessages(string user)
+    {
+        _messages.TryGetValue(user, out var msgs);
+        return msgs ?? new List<MessageDto>();
+    }
+
+    public List<string> GetAllGuests()
+    {
+        return _guestIds.ToList();
     }
 }

@@ -665,6 +665,7 @@ namespace Fitness.Business.Concrete
 
             await _userDal.Delete(user);
         }
+
        
 
 

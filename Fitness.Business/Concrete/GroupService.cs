@@ -1,6 +1,8 @@
 ﻿using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
+using Fitness.DataAccess.Concrete.EfEntityFramework;
 using Fitness.Entities.Concrete;
+using Fitness.Entities.Models;
 using Fitness.Entities.Models.Group;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,12 +18,29 @@ namespace Fitness.Business.Concrete
         private readonly IGroupDal _groupDal;
         private readonly IUserDal _userDal;
         private readonly IGroupUserDal _groupUserDal;
+        private readonly ITrainerScheduleDal _trainerScheduleDal;
 
-        public GroupService(IGroupDal groupDal, IUserDal userDal, IGroupUserDal groupUserDal)
+        public GroupService(IGroupDal groupDal, IUserDal userDal, IGroupUserDal groupUserDal, ITrainerScheduleDal trainerScheduleDal)
         {
             _groupDal = groupDal;
             _userDal = userDal;
             _groupUserDal = groupUserDal;
+            _trainerScheduleDal = trainerScheduleDal;
+        }
+      
+
+        //Groupdaki userleri gormek ucun
+        public async Task<List<UserGetDto>> GetUsersByGroupIdAsync(int groupId)
+        {
+            var groupUsers = await _groupUserDal.GetList(gu => gu.GroupId == groupId, include: q => q.Include(gu => gu.User));
+
+            return groupUsers.Select(gu => new UserGetDto
+            {
+                Id = gu.User.Id,
+                Name = gu.User.Name,
+                Email = gu.User.Email,
+              
+            }).ToList();
         }
 
         public async Task<Group> CreateGroupAsync(GroupCreateDto dto)
@@ -101,8 +120,11 @@ namespace Fitness.Business.Concrete
             if (group == null || user == null)
                 return false;
 
-            var alreadyExists = await _groupUserDal.AnyAsync(gu => gu.GroupId == dto.GroupId && gu.UserId == dto.UserId);
-            if (alreadyExists)
+            //var alreadyExists = await _groupUserDal.AnyAsync(gu => gu.GroupId == dto.GroupId && gu.UserId == dto.UserId);
+            //if (alreadyExists)
+            //    return false;
+            var alreadyInAnotherGroup = await _groupUserDal.AnyAsync(gu => gu.UserId == dto.UserId);
+            if (alreadyInAnotherGroup)
                 return false;
 
             var groupUser = new GroupUser

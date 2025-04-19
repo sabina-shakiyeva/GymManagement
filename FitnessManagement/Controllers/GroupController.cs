@@ -60,7 +60,16 @@ namespace FitnessManagement.Controllers
         {
             var result = await _groupService.AddUserToGroupAsync(dto);
             if (!result) return BadRequest("Qrupa əlavə edilə bilmədi (istifadəçi mövcud olmaya bilər və ya artıq əlavə edilib)");
-            return Ok("İstifadəçi qruppa əlavə olundu");
+            return Ok("İstifadəçi qrupa əlavə olundu");
         }
+        //groupdaki userleri gostermek ucundu
+        [HttpGet("{groupId}/users")]
+        public async Task<IActionResult> GetUsersByGroupId(int groupId)
+        {
+            var users = await _groupService.GetUsersByGroupIdAsync(groupId);
+            return Ok(users);
+        }
+
+
     }
 }

@@ -9,7 +9,7 @@ namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserEquipmentUsageController : ControllerBase
     {
         private readonly IUserEquipmentUsageService _usageService;

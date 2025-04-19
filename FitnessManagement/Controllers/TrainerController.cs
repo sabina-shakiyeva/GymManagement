@@ -1,4 +1,5 @@
 ﻿using Fitness.Business.Abstract;
+using Fitness.Business.Concrete;
 using Fitness.Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,10 +13,12 @@ namespace FitnessManagement.Controllers
     public class TrainerController : ControllerBase
     {
         private readonly ITrainerService _trainerService;
+        private readonly ITrainerScheduleService _trainerScheduleService;
 
-        public TrainerController(ITrainerService trainerService)
+        public TrainerController(ITrainerService trainerService, ITrainerScheduleService trainerScheduleService)
         {
             _trainerService = trainerService;
+            _trainerScheduleService = trainerScheduleService;
         }
         //QEYD:swaggerde test etme umumen trainer meselelerinde authorize mutleq qalmalidi cunki giris eden trainere gore userler get ve post oluna bilir postmandan test et
 
@@ -58,6 +61,32 @@ namespace FitnessManagement.Controllers
             await _trainerService.TakeAttendanceByTrainerAsync(trainerIdentityId, dto);
 
             return Ok("Attendance recorded successfully.");
+        }
+
+        [Authorize(Roles = "Trainer")]
+        //trainerin sirf oz ders kecdiyi grouplari gostermsi ucundu
+        [HttpGet("groups-by-trainer")]
+        public async Task<IActionResult> GetGroupsByTrainer()
+        {
+            var identityTrainerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _trainerScheduleService.GetGroupsByTrainerIdentityIdAsync(identityTrainerId);
+            return Ok(result);
+        }
+        [Authorize(Roles = "Trainer")]
+        //trainerin ders kecdiyi groupdaki userleri gosterir
+        [HttpGet("users-in-group")]
+        public async Task<IActionResult> GetUsersInGroup([FromQuery] int groupId)
+        {
+            try
+            {
+                var identityTrainerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var result = await _trainerScheduleService.GetUsersInTrainerGroupAsync(identityTrainerId, groupId);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
 
