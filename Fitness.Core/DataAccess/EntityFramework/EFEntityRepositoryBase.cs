@@ -1,5 +1,6 @@
 ﻿using Fitness.Core.Abstraction;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,21 @@ namespace Fitness.Core.DataAccess.EntityFramework
         {
             _context = context;
         }
+       // public async Task<List<TEntity>> GetList(
+       //Expression<Func<TEntity, bool>> filter,
+       //Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include)
+       // {
+       //     IQueryable<TEntity> query = _context.Set<TEntity>();
+
+       //     if (include != null)
+       //         query = include(query);
+
+       //     if (filter != null)
+       //         query = query.Where(filter);
+
+       //     return await query.ToListAsync();
+       // }
+
 
         public async Task Add(TEntity entity)
         {

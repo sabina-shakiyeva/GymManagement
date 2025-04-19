@@ -1,4 +1,5 @@
 ﻿using Fitness.Core.Abstraction;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,8 @@ namespace Fitness.Core.DataAccess
         Task<T> Get(Expression<Func<T, bool>> filter);
         Task<List<T>> GetList(Expression<Func<T, bool>> filter = null);
         Task<List<T>> GetList(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IQueryable<T>> include);
+        //Task<List<T>> GetList(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
+
 
         Task<T> Get(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IQueryable<T>> include);
 

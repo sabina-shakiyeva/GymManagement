@@ -72,11 +72,31 @@ namespace Fitness.Business.Concrete
         }
 
 
-        public async Task<List<TrainerScheduleDto>> GetAllAsync()
-        {
-            var schedules = await _trainerScheduleDal.GetAllAsync();
-            return _mapper.Map<List<TrainerScheduleDto>>(schedules);
-        }
+        public async Task<List<TrainerScheduleDetailedDto>> GetAllAsync()
+{
+    var schedules = await _trainerScheduleDal.GetList(
+        filter: null,
+        include: q => q
+            .Include(s => s.Trainer)
+            .Include(s => s.Group)
+            .Include(s => s.User)
+    );
+
+    var result = schedules.Select(s => new TrainerScheduleDetailedDto
+    {
+        Id = s.Id,
+        TrainerName = s.Trainer?.Name,
+        GroupName = s.Group?.Name,
+        UserName = s.User?.Name,
+        DayOfWeek = s.DayOfWeek.ToString(),
+        StartTime = s.StartTime,
+        EndTime = s.EndTime,
+        Description = s.Description
+    }).ToList();
+
+    return result;
+}
+
 
         public async Task<TrainerScheduleDto> GetByIdAsync(int id)
         {
@@ -137,14 +157,33 @@ namespace Fitness.Business.Concrete
             await _trainerScheduleDal.Update(entity);
             return _mapper.Map<TrainerScheduleDto>(entity);
         }
+      
         //TRAINER ucun ise asagidakini yazdim yeni trainer sirf kimlere ders deyirse onlari gore bilsin
-        public async Task<List<TrainerScheduleDto>> GetSchedulesByTrainerIdentityIdAsync(string identityTrainerId)
+        public async Task<List<TrainerScheduleDetailedDto>> GetSchedulesByTrainerIdentityIdAsync(string identityTrainerId)
         {
-          
-            var schedules = await _trainerScheduleDal.GetList(s => s.Trainer.IdentityTrainerId == identityTrainerId);
+            var schedules = await _trainerScheduleDal.GetList(
+                s => s.Trainer.IdentityTrainerId == identityTrainerId,
+                include: q => q
+                    .Include(s => s.Trainer)
+                    .Include(s => s.Group)
+                    .Include(s => s.User)
+            );
 
-            return _mapper.Map<List<TrainerScheduleDto>>(schedules);
+            var result = schedules.Select(s => new TrainerScheduleDetailedDto
+            {
+                Id = s.Id,
+                TrainerName = s.Trainer?.Name,
+                GroupName = s.Group?.Name,
+                UserName = s.User?.Name,
+                DayOfWeek = s.DayOfWeek.ToString(), 
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                Description = s.Description
+            }).ToList();
+
+            return result;
         }
+
 
         //Trainer-in id-ne gore ders kecdiyi qruplari getirir asagidaki funksiya
 
