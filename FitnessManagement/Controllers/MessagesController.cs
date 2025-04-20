@@ -6,6 +6,7 @@ using FitnessManagement.Dtos;
 
 [Route("api/[controller]")]
 [ApiController]
+
 public class MessageController : ControllerBase
 {
     private readonly IMessageService _messageService;

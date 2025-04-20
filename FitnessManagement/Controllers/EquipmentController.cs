@@ -8,7 +8,7 @@ namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class EquipmentController : ControllerBase
     {
         private readonly IEquipmentService _equipmentService;
@@ -24,7 +24,7 @@ namespace FitnessManagement.Controllers
             return Ok(equipmentList);
         }
         [HttpPost("add-equipment")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddEquipment([FromForm] EquipmentDto equipmentDto)
         {
            
@@ -40,7 +40,7 @@ namespace FitnessManagement.Controllers
         }
 
         [HttpPut("update-equipment/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateEquipment(int id, [FromForm] EquipmentDto equipmentDto)
         {
             await _equipmentService.UpdateEquipment(id, equipmentDto);
@@ -48,7 +48,7 @@ namespace FitnessManagement.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEquipment(int id)
         {
             await _equipmentService.DeleteEquipment(id);

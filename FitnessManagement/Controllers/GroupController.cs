@@ -1,5 +1,6 @@
 ﻿using Fitness.Business.Abstract;
 using Fitness.Entities.Models.Group;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +8,7 @@ namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GroupController : ControllerBase
     {
         private readonly IGroupService _groupService;

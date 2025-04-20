@@ -9,7 +9,7 @@ namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   
+    [Authorize]
     public class PackageController : ControllerBase
     {
         private readonly IPackageService _packageService;
