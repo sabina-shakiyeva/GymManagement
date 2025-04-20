@@ -14,6 +14,9 @@ namespace FitnessManagement.Entities
 
         public int? GroupId { get; set; }
         public Group? Group { get; set; }
+        public int? PackageId { get; set; }
+        public Package? Package { get; set; }
+
 
         public DayOfWeek DayOfWeek { get; set; } 
 

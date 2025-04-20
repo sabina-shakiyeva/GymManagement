@@ -192,7 +192,9 @@ namespace Fitness.Business.Concrete
             var schedules = await _trainerScheduleDal.GetList(
                 s => s.Trainer.IdentityTrainerId == trainerIdentityId && s.GroupId.HasValue,
                 include: q => q.Include(s => s.Group)
-                               .Include(s => s.Trainer)
+                  .ThenInclude(g => g.Package) 
+              .Include(s => s.Trainer)
+               
             );
 
             var distinctGroups = schedules
