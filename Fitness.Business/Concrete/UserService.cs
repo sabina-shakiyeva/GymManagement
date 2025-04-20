@@ -34,6 +34,7 @@ namespace Fitness.Business.Concrete
             _fileService = fileService;
             _userManager = userManager;
             _trainerDal = trainerDal;
+            _roleManager = roleManager;
           
 
 
