@@ -11,7 +11,7 @@ namespace Fitness.Business.Abstract
 {
     public interface IAdminService
     {
-        Task<AdminProfileDto> GetAdminByIdAsync(int id);
+        Task<AdminProfileDto> GetAdminByIdAsync(string id);
         Task AddAdminAsync(ApplicationUser admin);
         Task UpdateAdminAsync(int adminId, AdminUpdateDto adminUpdateDto);
         Task<StatisticsDto> GetStatisticsAsync();

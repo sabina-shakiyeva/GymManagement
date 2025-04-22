@@ -58,10 +58,10 @@ namespace Fitness.Business.Concrete
                 await _adminDal.Add(newAdmin);
             }
         }
-        public async Task<AdminProfileDto> GetAdminByIdAsync(int id)
+        public async Task<AdminProfileDto> GetAdminByIdAsync(string identityAdminId)
         {
-            var admin = await _adminDal.Get(a => a.Id == id);
-            if (admin == null)
+            var admin = await _adminDal.Get(a => a.IdentityAdminId == identityAdminId);
+			if (admin == null)
                 throw new Exception("Admin not found");
 
             var identityUser = await _userManager.FindByIdAsync(admin.IdentityAdminId);

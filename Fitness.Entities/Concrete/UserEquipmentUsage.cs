@@ -13,9 +13,9 @@ namespace Fitness.Entities.Concrete
         public int UserId { get; set; }
         public int EquipmentId { get; set; }
 
-        public int? DurationInMinutes { get; set; } // dəqiqə ilə
-        public int? Repetition { get; set; } // təkrar sayı
-        public DateTime Date { get; set; }= DateTime.Now; // istifadə tarixi
+        public int? DurationInMinutes { get; set; } 
+        public int? Repetition { get; set; } 
+        public DateTime Date { get; set; }= DateTime.Now;
 
         public User User { get; set; }
         public Equipment Equipment { get; set; }

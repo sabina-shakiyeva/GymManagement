@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class AttendanceController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace FitnessManagement.Controllers
 
 
         [HttpPost("take-attendance")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> TakeAttendance([FromBody] TakeAttendanceDto dto)
         {
             await _attendanceService.TakeAttendanceAsync(dto);

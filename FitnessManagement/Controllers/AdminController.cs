@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text;
 
 namespace FitnessManagement.Controllers
@@ -38,14 +39,17 @@ namespace FitnessManagement.Controllers
             _trainerService = trainerService;
             _adminService = adminService;
         }
-        [HttpGet("admin-profile/{id}")]
-        public async Task<IActionResult> GetAdminProfile(int id)
-        {
-            var admin = await _adminService.GetAdminByIdAsync(id);
-            return Ok(admin);
-        }
+        [HttpGet("admin-profile")]
+       
+		public async Task<IActionResult> GetMyProfile()
+		{
+			var identityId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			var admin = await _adminService.GetAdminByIdAsync(identityId);
+			return Ok(admin);
+		}
 
-        [HttpPost("add-user")]
+
+		[HttpPost("add-user")]
         public async Task<IActionResult> AddUser([FromForm] UserDto userDto)
         {
             if(userDto==null)

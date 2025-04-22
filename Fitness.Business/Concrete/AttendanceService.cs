@@ -67,6 +67,12 @@ namespace Fitness.Business.Concrete
                 await _attendanceDal.Update(attendance);
 
             }
+            if (dto.Status == AttendanceStatus.Present)
+            {
+                var user = await _userDal.GetByIdAsync(dto.UserId);
+                user.Point += 1;
+                await _userDal.Update(user);
+            }
 
             else
 
@@ -77,8 +83,11 @@ namespace Fitness.Business.Concrete
                 attendance.AttendanceDate = dto.AttendanceDate.Date;
 
                 await _attendanceDal.Add(attendance);
+                
+
 
             }
+        
 
         }
 

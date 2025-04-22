@@ -15,8 +15,7 @@ namespace Fitness.Entities.Models.Trainer
         public DayOfWeek DayOfWeek { get; set; }
         public TimeComponentDto StartTime { get; set; }
         public TimeComponentDto EndTime { get; set; }
-        //public TimeOnly StartTime { get; set; }
-        //public TimeOnly EndTime { get; set; }
+      
 
         public string Description { get; set; }
     }
