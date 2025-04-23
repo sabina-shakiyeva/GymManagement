@@ -84,21 +84,29 @@ namespace Fitness.Business.Concrete
 			};
 			return productDto;
 		}
-	
-		public async Task UpdateAsync(int productId,ProductUpdateDto productDto)
+
+		public async Task UpdateAsync(int productId, ProductUpdateDto productDto)
 		{
-			var product= await _productDal.Get(p => p.Id == productId);
+			var product = await _productDal.Get(p => p.Id == productId);
 			if (product == null)
 			{
 				throw new Exception("Product not found!");
 			}
-			_mapper.Map(productDto, product);
+
+			
+			product.Name = productDto.Name ?? product.Name;
+			product.Description = productDto.Description ?? product.Description;
+			product.PointCost = productDto.PointCost ?? product.PointCost;
+			product.Stock = productDto.Stock ?? product.Stock;
+
 			if (productDto.ImageUrl != null)
 			{
 				string imageUrl = await _fileService.UploadFileAsync(productDto.ImageUrl);
 				product.ImageUrl = imageUrl;
 			}
+
 			await _productDal.Update(product);
 		}
+
 	}
 }

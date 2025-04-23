@@ -42,6 +42,11 @@ namespace FitnessManagement.Data
         public DbSet<UserWorkout> UserWorkouts { get; set; }
         public DbSet<UserBmiInfo> UserBmiInfos { get; set; }
         public DbSet<UserEquipmentUsage> UserEquipmentUsages { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<GroupUser> GroupUsers { get; set; }
+        public DbSet<Product> Products { get; set; }
+      
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

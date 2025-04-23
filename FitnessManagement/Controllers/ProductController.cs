@@ -15,31 +15,32 @@ namespace FitnessManagement.Controllers
 		{
 			_productService = productService;
 		}
-		[HttpGet]
+		[HttpGet("products")]
 		public async Task<IActionResult> GetAll()
 		{
 			var products = await _productService.GetAllAsync();
 			return Ok(products);
 		}
-		[HttpPost]
+		[HttpPost("add-product")]
 		public async Task<IActionResult> Add([FromForm] ProductCreateDto productDto)
 		{
 			await _productService.AddAsync(productDto);
 			return Ok(new { message = "Product successfully added." });
 		}
+
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetById(int id)
 		{
 			var product = await _productService.GetByIdAsync(id);
 			return Ok(product);
 		}
-		[HttpPut("{id}")]
+		[HttpPut("update/{id}")]
 		public async Task<IActionResult> Update(int id, [FromForm] ProductUpdateDto productDto)
 		{
 			await _productService.UpdateAsync(id, productDto);
 			return Ok(new { message = "Product successfully updated." });
 		}
-		[HttpDelete("{id}")]
+		[HttpDelete("delete/{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
 			await _productService.DeleteAsync(id);
