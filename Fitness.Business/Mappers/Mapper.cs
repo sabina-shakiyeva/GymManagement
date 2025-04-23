@@ -24,6 +24,7 @@ namespace Fitness.Business.Mappers
             CreateMap<TrainerScheduleCreateDto, TrainerSchedule>();
             CreateMap<TrainerSchedule, TrainerScheduleDto>();
 			CreateMap<Product, ProductCreateDto>().ReverseMap();
+			CreateMap<Product, ProductUpdateDto>().ReverseMap();
 
 		}
     }

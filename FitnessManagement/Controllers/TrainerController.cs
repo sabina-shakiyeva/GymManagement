@@ -21,9 +21,19 @@ namespace FitnessManagement.Controllers
             _trainerService = trainerService;
             _trainerScheduleService = trainerScheduleService;
         }
-        //QEYD:swaggerde test etme umumen trainer meselelerinde authorize mutleq qalmalidi cunki giris eden trainere gore userler get ve post oluna bilir postmandan test et
 
-        [HttpGet("statistics")]
+		[HttpGet("trainer-profile")]
+		[Authorize(Roles = "Trainer")]
+		public async Task<IActionResult> GetMyTrainerProfile()
+		{
+			var identityId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			var trainer = await _trainerService.GetTrainerProfile(identityId);
+			return Ok(trainer);
+		}
+
+		//QEYD:swaggerde test etme umumen trainer meselelerinde authorize mutleq qalmalidi cunki giris eden trainere gore userler get ve post oluna bilir postmandan test et
+
+		[HttpGet("statistics")]
         [Authorize(Roles = "Trainer")]
         public async Task<IActionResult> GetStatistics()
         {

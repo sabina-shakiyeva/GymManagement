@@ -23,8 +23,17 @@ namespace FitnessManagement.Controllers
             _userService = userService;
             _userManager = userManager;
         }
+      
+		[HttpGet("user-profile")]
+		[Authorize(Roles = "User")]
+		public async Task<IActionResult> GetMyUserProfile()
+		{
+			var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			var user = await _userService.GetUserProfile(identityUserId);
+			return Ok(user);
+		}
 
-        [HttpGet("top-users")]
+		[HttpGet("top-users")]
         public async Task<IActionResult> GetTopUsers()
         {
             var topUsers = await _userService.GetTop10UsersByPointsAsync();

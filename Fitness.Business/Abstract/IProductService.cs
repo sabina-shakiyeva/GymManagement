@@ -10,10 +10,10 @@ namespace Fitness.Business.Abstract
 {
 	public interface IProductService
 	{
-		Task<List<Product>> GetAllAsync();
-		Task<Product> GetByIdAsync(int id);
+		Task<List<ProductGetDto>> GetAllAsync();
+		Task<ProductGetDto> GetByIdAsync(int id);
 		Task AddAsync(ProductCreateDto product);
-		Task UpdateAsync(ProductUpdateDto product);
-		Task DeleteAsync(int id);
+		Task UpdateAsync(int productId, ProductUpdateDto productDto);
+		Task DeleteAsync(int productId);
 	}
 }

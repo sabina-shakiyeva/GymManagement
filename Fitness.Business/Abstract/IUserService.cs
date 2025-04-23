@@ -1,5 +1,6 @@
 ﻿using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
+using Fitness.Entities.Models.User;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using System;
@@ -25,6 +26,7 @@ namespace Fitness.Business.Abstract
         Task UpdateUserPackageTrainer(int id, UserPackageTrainerUpdateDto dto);
         Task<List<UserPackageTrainerDto>> GetPayments();
         Task<List<UserPackageTrainerDto>> GetAllUserPackageTrainer();
+        Task<UserProfileDto> GetUserProfile(string identityUserId);
 
 
 
@@ -32,5 +34,6 @@ namespace Fitness.Business.Abstract
 
 
 
-    }
+
+	}
 }

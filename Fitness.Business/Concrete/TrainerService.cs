@@ -42,8 +42,33 @@ namespace Fitness.Business.Concrete
             _packageDal = packageDal;
             _attendanceDal = attendanceDal;
         }
-        //Say statistikasi
-        public async Task<TrainerStatisticsDto> GetTrainerStatisticsAsync(string trainerIdentityId)
+
+		public async Task<TrainerProfileDto> GetTrainerProfile(string identityTrainerId)
+		{
+			var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == identityTrainerId);
+			if (trainer == null)
+				throw new Exception("Trainer not found");
+
+			var identityUser = await _userManager.FindByIdAsync(identityTrainerId);
+			if (identityUser == null)
+				throw new Exception("Identity user not found");
+
+			return new TrainerProfileDto
+			{
+				Id = trainer.Id,
+				Name = trainer.Name,
+				Email = identityUser.Email,
+				ImageUrl = trainer.ImageUrl != null ? _fileService.GetFileUrl(trainer.ImageUrl) : null,
+				Experience = trainer.Experience,
+				Salary = trainer.Salary,
+				CreatedDate = trainer.CreatedDate,
+				MobileTelephone = trainer.MobileTelephone
+			};
+		}
+
+
+		//Say statistikasi
+		public async Task<TrainerStatisticsDto> GetTrainerStatisticsAsync(string trainerIdentityId)
         {
             var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
 

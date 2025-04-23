@@ -34,9 +34,12 @@ namespace Fitness.Business.Abstract
         Task<List<AttendanceGetDto>> GetTrainerAttendanceListAsync(string trainerIdentityId);
 
         Task TakeAttendanceByTrainerAsync(string trainerIdentityId, TakeAttendanceDto dto);
+        //trainer profile
+        Task<TrainerProfileDto> GetTrainerProfile(string identityTrainerId);
 
 
 
 
-    }
+
+	}
 }

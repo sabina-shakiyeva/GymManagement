@@ -3,6 +3,7 @@ using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
+using Fitness.Entities.Models.User;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using FitnessManagement.Services;
@@ -39,7 +40,37 @@ namespace Fitness.Business.Concrete
 
 
         }
-        public async Task ApproveUser(string userId)
+		public async Task<UserProfileDto> GetUserProfile(string identityUserId)
+		{
+			
+			var user = await _userDal.Get(u => u.IdentityUserId == identityUserId, include: q => q
+			 .Include(u => u.Package)
+			 .Include(u => u.Trainer));
+
+			if (user == null)
+				throw new Exception("User not found");
+
+			var identityUser = await _userManager.FindByIdAsync(identityUserId);
+			if (identityUser == null)
+				throw new Exception("Identity user not found");
+
+			return new UserProfileDto
+			{
+				Id = user.Id,
+				Name = user.Name,
+				Email = identityUser.Email,
+				Phone = identityUser.PhoneNumber,
+				ImageUrl = user.ImageUrl != null ? _fileService.GetFileUrl(user.ImageUrl) : null,
+				CreatedDate = user.CreatedDate,
+				DateOfBirth = user.DateOfBirth,
+				TrainerId = user.TrainerId,
+				PackageId = user.PackageId,
+				TrainerName = user.Trainer != null ? user.Trainer.Name : null,
+				PackageName = user.Package != null ? user.Package.PackageName: null
+			};
+		}
+
+		public async Task ApproveUser(string userId)
         {
            
             var user = await _userManager.Users

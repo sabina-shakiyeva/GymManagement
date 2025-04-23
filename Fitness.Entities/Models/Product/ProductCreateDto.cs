@@ -13,6 +13,6 @@ namespace Fitness.Entities.Models.Product
 		public string Description { get; set; }
 		public int PointCost { get; set; }
 		public int Stock { get; set; }
-		public IFormFile? Image { get; set; }
+		public IFormFile? ImageUrl { get; set; }
 	}
 }
