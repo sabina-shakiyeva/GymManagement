@@ -2,6 +2,7 @@
 using Fitness.Business.Concrete;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
+using Fitness.Entities.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -23,8 +24,29 @@ namespace FitnessManagement.Controllers
             _userService = userService;
             _userManager = userManager;
         }
-      
-		[HttpGet("user-profile")]
+        [HttpPut("profile-update/{userId}")]
+        public async Task<IActionResult> UpdateUserProfile(int userId, [FromForm] UserProfileUpdateDto dto)
+        {
+            try
+            {
+                await _userService.UpdateUserProfile(userId, dto);
+                return Ok("User profile updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //STATISTIKA 
+        [HttpGet("summary-for-user")]
+        public async Task<IActionResult> GetStatistics()
+        {
+            var result = await _userService.GetStatisticsForUser();
+            return Ok(result);
+        }
+
+        [HttpGet("user-profile")]
 		[Authorize(Roles = "User")]
 		public async Task<IActionResult> GetMyUserProfile()
 		{

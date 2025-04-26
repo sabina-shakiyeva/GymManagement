@@ -27,6 +27,8 @@ namespace Fitness.Business.Abstract
         Task<List<UserPackageTrainerDto>> GetPayments();
         Task<List<UserPackageTrainerDto>> GetAllUserPackageTrainer();
         Task<UserProfileDto> GetUserProfile(string identityUserId);
+        Task<StatisticsDto> GetStatisticsForUser();
+        Task UpdateUserProfile(int userId, UserProfileUpdateDto userProfileUpdateDto);
 
 
 
@@ -35,5 +37,5 @@ namespace Fitness.Business.Abstract
 
 
 
-	}
+    }
 }

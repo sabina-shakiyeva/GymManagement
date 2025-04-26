@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
+using Fitness.DataAccess.Concrete.EfEntityFramework;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
 using Fitness.Entities.Models.User;
@@ -23,12 +24,14 @@ namespace Fitness.Business.Concrete
         private readonly IMapper _mapper;
         private readonly IFileService _fileService;
         private readonly ITrainerDal _trainerDal;
+        private readonly IEquipmentDal _equipmentDal;
+        private readonly IPackageDal _packageDal;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
 
 
-        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, ITrainerDal trainerDal, RoleManager<IdentityRole> roleManager)
+        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, ITrainerDal trainerDal, RoleManager<IdentityRole> roleManager, IEquipmentDal equipmentDal, IPackageDal packageDal)
         {
             _userDal = userDal;
             _mapper = mapper;
@@ -36,11 +39,105 @@ namespace Fitness.Business.Concrete
             _userManager = userManager;
             _trainerDal = trainerDal;
             _roleManager = roleManager;
-          
+            _equipmentDal = equipmentDal;
+            _packageDal = packageDal;
 
 
         }
-		public async Task<UserProfileDto> GetUserProfile(string identityUserId)
+        public async Task UpdateUserProfile(int userId, UserProfileUpdateDto userProfileUpdateDto)
+        {
+            var user = await _userDal.Get(u => u.Id == userId);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var identityUser = await _userManager.FindByIdAsync(user.IdentityUserId);
+            if (identityUser == null)
+            {
+                throw new Exception("Identity user not found");
+            }
+            if (userProfileUpdateDto.Phone != null)
+            {
+                user.Phone = userProfileUpdateDto.Phone;
+
+            }
+
+            if (!string.IsNullOrEmpty(userProfileUpdateDto.Name))
+            {
+                user.Name = userProfileUpdateDto.Name;
+                identityUser.FullName = userProfileUpdateDto.Name;
+            }
+            if (userProfileUpdateDto.DateOfBirth.HasValue)
+            {
+                user.DateOfBirth = userProfileUpdateDto.DateOfBirth.Value;
+            }
+
+
+            if (!string.IsNullOrEmpty(userProfileUpdateDto.Email))
+            {
+                user.Email = userProfileUpdateDto.Email;
+                identityUser.Email = userProfileUpdateDto.Email;
+                identityUser.UserName = userProfileUpdateDto.Email;
+            }
+
+   
+
+            if (userProfileUpdateDto.ImageUrl != null)
+            {
+                string imageUrl = await _fileService.UploadFileAsync(userProfileUpdateDto.ImageUrl);
+                user.ImageUrl = imageUrl;
+            }
+        
+            
+            if (!string.IsNullOrEmpty(userProfileUpdateDto.NewPassword))
+            {
+                if (!string.IsNullOrEmpty(userProfileUpdateDto.CurrentPassword))
+                {
+
+                    var checkPassword = await _userManager.CheckPasswordAsync(identityUser, userProfileUpdateDto.CurrentPassword);
+
+                    if (!checkPassword)
+                    {
+                        throw new Exception("Current password is incorrect!");
+                    }
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
+                    var result = await _userManager.ResetPasswordAsync(identityUser, token, userProfileUpdateDto.NewPassword);
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception("Failed to change password: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                    }
+
+                }
+
+                else
+                {
+                    throw new Exception("Current password is required to change the password!");
+                }
+
+
+            }
+            user.UpdatedDate = DateTime.Now;
+            await _userManager.UpdateAsync(identityUser);
+            await _userDal.Update(user);
+        }
+
+        //STATISTICS USER
+        public async Task<StatisticsDto> GetStatisticsForUser()
+        {
+          
+            var trainerCount = await _trainerDal.GetList();
+            var equipmentCount = await _equipmentDal.GetList();
+            var packageCount = await _packageDal.GetList();
+
+            return new StatisticsDto
+            {              
+                NumberOfTrainers = trainerCount.Count,
+                NumberOfEquipments = equipmentCount.Count,
+                NumberOfPackages = packageCount.Count
+            };
+        }
+        public async Task<UserProfileDto> GetUserProfile(string identityUserId)
 		{
 			
 			var user = await _userDal.Get(u => u.IdentityUserId == identityUserId, include: q => q
