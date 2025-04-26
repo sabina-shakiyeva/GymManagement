@@ -24,6 +24,21 @@ namespace FitnessManagement.Controllers
             _userService = userService;
             _userManager = userManager;
         }
+        //groupdaki userler coxdan aza dogru siralanacaq 
+        [HttpGet("group-top-users")]
+        public async Task<IActionResult> GetTopUsersByGroup()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(identityUserId))
+                return Unauthorized();
+
+            var topUsers = await _userService.GetTopUsersByGroupAsync(identityUserId);
+
+            return Ok(topUsers);
+        }
+
+
         [HttpPut("profile-update/{userId}")]
         public async Task<IActionResult> UpdateUserProfile(int userId, [FromForm] UserProfileUpdateDto dto)
         {

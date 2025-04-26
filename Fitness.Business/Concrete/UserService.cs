@@ -26,12 +26,13 @@ namespace Fitness.Business.Concrete
         private readonly ITrainerDal _trainerDal;
         private readonly IEquipmentDal _equipmentDal;
         private readonly IPackageDal _packageDal;
+        private readonly IGroupUserDal _groupUserDal;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
 
 
-        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, ITrainerDal trainerDal, RoleManager<IdentityRole> roleManager, IEquipmentDal equipmentDal, IPackageDal packageDal)
+        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, ITrainerDal trainerDal, RoleManager<IdentityRole> roleManager, IEquipmentDal equipmentDal, IPackageDal packageDal, IGroupUserDal groupUserDal)
         {
             _userDal = userDal;
             _mapper = mapper;
@@ -41,9 +42,37 @@ namespace Fitness.Business.Concrete
             _roleManager = roleManager;
             _equipmentDal = equipmentDal;
             _packageDal = packageDal;
+            _groupUserDal= groupUserDal;
 
 
         }
+       
+        public async Task<List<TopUserDto>> GetTopUsersByGroupAsync(string identityUserId)
+        {
+            var groupUsers = await _groupUserDal.GetList(filter: null, q => q.Include(gu => gu.User)); 
+            var currentGroupUser = groupUsers.FirstOrDefault(gu => gu.User.IdentityUserId == identityUserId);
+
+            if (currentGroupUser == null)
+                return new List<TopUserDto>(); 
+
+            var groupId = currentGroupUser.GroupId;
+
+            var groupMembers = groupUsers
+                .Where(gu => gu.GroupId == groupId)
+                .Select(gu => gu.User)
+                .OrderByDescending(u => u.Point)
+                .Select(u => new TopUserDto
+                {
+                    UserId = u.Id,
+                    Name = u.Name,
+                    Point = u.Point,
+                    ImageUrl = u.ImageUrl != null ? _fileService.GetFileUrl(u.ImageUrl) : null
+                })
+                .ToList();
+
+            return groupMembers;
+        }
+
         public async Task UpdateUserProfile(int userId, UserProfileUpdateDto userProfileUpdateDto)
         {
             var user = await _userDal.Get(u => u.Id == userId);

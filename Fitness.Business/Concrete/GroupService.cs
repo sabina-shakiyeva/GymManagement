@@ -4,6 +4,7 @@ using Fitness.DataAccess.Concrete.EfEntityFramework;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models;
 using Fitness.Entities.Models.Group;
+using FitnessManagement.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Fitness.Business.Concrete
         private readonly IUserDal _userDal;
         private readonly IGroupUserDal _groupUserDal;
         private readonly ITrainerScheduleDal _trainerScheduleDal;
-
+        private readonly IFileService _fileService;
         public GroupService(IGroupDal groupDal, IUserDal userDal, IGroupUserDal groupUserDal, ITrainerScheduleDal trainerScheduleDal)
         {
             _groupDal = groupDal;
@@ -136,6 +137,8 @@ namespace Fitness.Business.Concrete
             await _groupUserDal.Add(groupUser);
             return true;
         }
+       
+
     }
 
 }
