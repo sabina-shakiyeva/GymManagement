@@ -1,5 +1,6 @@
 ﻿using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
+using Fitness.Entities.Models.CartItem;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -20,36 +21,30 @@ namespace FitnessManagement.Controllers
 
         }
         [HttpPost("add-to-cart")]
-        public async Task<IActionResult> AddToCart(int productId, int quantity)
+        public async Task<IActionResult> AddToCart([FromBody] CartItemAddDto dto)
         {
-            var userIdentityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;  
+            var userIdentityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdentityId))
-            {
                 return Unauthorized("User identity not found");
-            }
-
 
             var user = await _userDal.Get(u => u.IdentityUserId == userIdentityId);
 
             if (user == null)
-            {
                 return Unauthorized("User not found");
-            }
-            await _cartService.AddToCartAsync(user.Id, productId, quantity);
+
+            await _cartService.AddToCartAsync(user.Id, dto.ProductId, dto.Quantity);
             return Ok(new { message = "Product added to cart!" });
         }
-
-        [HttpPost("remove-from-cart")]
-        public async Task<IActionResult> RemoveFromCart( int productId)
+        [HttpDelete("remove-from-cart/{productId}")]
+        public async Task<IActionResult> RemoveFromCart(int productId)
         {
-            var userIdentityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;  
+            var userIdentityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdentityId))
             {
                 return Unauthorized("User identity not found");
             }
-
 
             var user = await _userDal.Get(u => u.IdentityUserId == userIdentityId);
 
@@ -57,34 +52,31 @@ namespace FitnessManagement.Controllers
             {
                 return Unauthorized("User not found");
             }
+
             await _cartService.RemoveFromCartAsync(user.Id, productId);
             return Ok(new { message = "Product removed from cart!" });
         }
+
         [HttpPost("update-quantity")]
-        public async Task<IActionResult> UpdateQuantity( int productId, int newQuantity)
+        public async Task<IActionResult> UpdateQuantity([FromBody] CartItemUpdateDto dto)
         {
-            var userIdentityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
+            var userIdentityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdentityId))
-            {
                 return Unauthorized("User identity not found");
-            }
-
 
             var user = await _userDal.Get(u => u.IdentityUserId == userIdentityId);
 
             if (user == null)
-            {
                 return Unauthorized("User not found");
-            }
-            if (newQuantity <= 0)
+
+            if (dto.NewQuantity <= 0)
             {
-                
-                await _cartService.RemoveFromCartAsync(user.Id, productId);
+                await _cartService.RemoveFromCartAsync(user.Id, dto.ProductId);
                 return Ok(new { message = "Product removed from cart because quantity was 0." });
             }
 
-            await _cartService.UpdateQuantityAsync(user.Id, productId, newQuantity);
+            await _cartService.UpdateQuantityAsync(user.Id, dto.ProductId, dto.NewQuantity);
             return Ok(new { message = "Product quantity updated!" });
         }
         [HttpGet("get-cart")]

@@ -1,4 +1,5 @@
 ﻿using Fitness.Entities.Concrete;
+using Fitness.Entities.Models.CartItem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,9 @@ namespace Fitness.Business.Abstract
         Task AddToCartAsync(int userId, int productId, int quantity);
         Task RemoveFromCartAsync(int userId, int productId);
         Task UpdateQuantityAsync(int userId, int productId, int newQuantity);
-        Task<List<CartItem>> GetUserCartAsync(int userId);
+
+        Task<List<CartItemDto>> GetUserCartAsync(int userId);
+
         Task BuyAllFromCartAsync(int userId);
     }
 }

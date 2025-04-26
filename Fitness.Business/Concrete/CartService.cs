@@ -1,6 +1,9 @@
 ﻿using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
 using Fitness.Entities.Concrete;
+using Fitness.Entities.Models.CartItem;
+using FitnessManagement.Entities;
+using FitnessManagement.Services;
 using Microsoft.EntityFrameworkCore;
 
 public class CartService : ICartService
@@ -9,13 +12,16 @@ public class CartService : ICartService
     private readonly IProductDal _productDal;
     private readonly IUserDal _userDal;
     private readonly IPurchaseRequestDal _purchaseRequestDal;
+    private readonly IFileService _fileService;
 
-    public CartService(ICartItemDal cartItemDal, IProductDal productDal, IUserDal userDal, IPurchaseRequestDal purchaseRequestDal)
+    public CartService(ICartItemDal cartItemDal, IProductDal productDal, IUserDal userDal, IPurchaseRequestDal purchaseRequestDal, IFileService fileService)
     {
         _cartItemDal = cartItemDal;
         _productDal = productDal;
         _userDal = userDal;
         _purchaseRequestDal = purchaseRequestDal;
+        _fileService = fileService;
+
     }
 
     public async Task BuyAllFromCartAsync(int userId)
@@ -62,26 +68,29 @@ public class CartService : ICartService
 
     public async Task UpdateQuantityAsync(int userId, int productId, int newQuantity)
     {
-        var item = await _cartItemDal.Get(ci => ci.UserId == userId && ci.ProductId == productId);
+        var item = await _cartItemDal.Get(
+            ci => ci.UserId == userId && ci.ProductId == productId,
+            query => query.Include(ci => ci.Product).Include(ci => ci.User) 
+        );
+
         if (item == null)
             throw new Exception("Cart item not found");
 
-        var product = item.Product;
-        if (product == null)
+        if (item.Product == null)
             throw new Exception("Product not found");
 
-        var user = item.User; 
-        if (user == null)
+        if (item.User == null)
             throw new Exception("User not found");
 
-        int totalPointCost = newQuantity * product.PointCost;
+        int totalPointCost = newQuantity * item.Product.PointCost;
 
-        if (totalPointCost > user.Point)
+        if (totalPointCost > item.User.Point)
             throw new Exception("Not enough points");
 
         item.Quantity = newQuantity;
         await _cartItemDal.Update(item);
     }
+
 
     public async Task AddToCartAsync(int userId, int productId, int quantity)
     {
@@ -107,14 +116,29 @@ public class CartService : ICartService
         }
     }
 
-    public async Task<List<CartItem>> GetUserCartAsync(int userId)
+    public async Task<List<CartItemDto>> GetUserCartAsync(int userId)
     {
-        return await _cartItemDal.GetList(
-    ci => ci.UserId == userId,
-    query => query.Include(ci => ci.Product)
-);
+        var cartItems = await _cartItemDal.GetList(
+            ci => ci.UserId == userId,
+            query => query.Include(ci => ci.Product)
+        );
+
+        return cartItems
+      .Where(ci => ci.Product != null) 
+      .Select(ci => new CartItemDto
+      {
+          ProductId = ci.ProductId,
+          ProductName = ci.Product.Name,
+          Quantity = ci.Quantity,
+          PointCost = ci.Product.PointCost,
+          ImageUrl = !string.IsNullOrEmpty(ci.Product.ImageUrl)
+              ? _fileService.GetFileUrl(ci.Product.ImageUrl)
+              : null,
+      })
+      .ToList();
 
     }
+
 
     public async Task RemoveFromCartAsync(int userId, int productId)
     {

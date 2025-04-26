@@ -313,6 +313,7 @@ namespace Fitness.Business.Concrete
                 
                 await _roleManager.CreateAsync(new IdentityRole("Trainer"));
             }
+            await _userManager.AddToRoleAsync(identityTrainer, "Trainer");
         }
 
 

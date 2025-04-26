@@ -2,6 +2,7 @@
 using Fitness.DataAccess.Abstract;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,10 @@ namespace Fitness.Business.Concrete
             _userDal = userDal;
             _packageDal = packageDal;
         }
-        public async Task<string> PurchasePackageAsync(int userId, int packageId, PaymentDto paymentDto)
+        public async Task<string> PurchasePackageAsync(string identityUserId, int packageId, PaymentDto paymentDto)
         {
-            var user = await _userDal.Get(u => u.Id == userId);
+        ;
+            var user = await _userDal.Get(u => u.IdentityUserId == identityUserId);
             if (user == null)
                 throw new Exception("User not found.");
 
@@ -50,7 +52,7 @@ namespace Fitness.Business.Concrete
 
             var payment = new Payment
             {
-                UserId = userId,
+                UserId = user.Id,
                 PackageId = packageId,
                 Amount = package.Price,
                 PaymentDate = DateTime.Now
