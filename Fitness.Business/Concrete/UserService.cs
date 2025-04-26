@@ -46,7 +46,34 @@ namespace Fitness.Business.Concrete
 
 
         }
-       
+        public async Task<UserPackageInfoDto> GetUserPackageInfoAsync(string identityUserId)
+        {
+            var user = await _userDal.Get(
+                u => u.IdentityUserId == identityUserId,
+                include: u => u
+                    .Include(u => u.Package)
+                    .Include(u => u.Trainer)
+                    .Include(u => u.GroupUsers)
+                        .ThenInclude(gu => gu.Group)
+            );
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            var dto = new UserPackageInfoDto
+            {
+                PackageName = user.Package?.PackageName,
+                PackagePrice = user.Package?.Price,
+                TrainerName = user.Trainer?.Name,
+                GroupName = user.GroupUsers.FirstOrDefault()?.Group?.Name
+            };
+
+            return dto;
+        }
+
+
         public async Task<List<TopUserDto>> GetTopUsersByGroupAsync(string identityUserId)
         {
             var groupUsers = await _groupUserDal.GetList(filter: null, q => q.Include(gu => gu.User)); 

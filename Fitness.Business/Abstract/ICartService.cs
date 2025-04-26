@@ -13,5 +13,6 @@ namespace Fitness.Business.Abstract
         Task RemoveFromCartAsync(int userId, int productId);
         Task UpdateQuantityAsync(int userId, int productId, int newQuantity);
         Task<List<CartItem>> GetUserCartAsync(int userId);
+        Task BuyAllFromCartAsync(int userId);
     }
 }

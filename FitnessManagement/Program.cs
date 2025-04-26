@@ -55,6 +55,8 @@ builder.Services.AddScoped<ITrainerScheduleDal,EfTrainerScheduleDal>();
 builder.Services.AddScoped<IGroupUserDal, EfGroupUserDal>();
 builder.Services.AddScoped<IMessageDal, EfMessageDal>();
 builder.Services.AddScoped<IProductDal, EfProductDal>();
+builder.Services.AddScoped<ICartItemDal, EfCartItemDal>();
+builder.Services.AddScoped<IPurchaseRequestDal, EfPurchaseRequestDal>();
 builder.Services.AddScoped <IGroupService,GroupService>();
 builder.Services.AddScoped<ITrainerScheduleService,TrainerScheduleService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
@@ -66,6 +68,8 @@ builder.Services.AddScoped<IPackageService, PackageService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
 builder.Services.AddScoped<IUserEquipmentUsageService, UserEquipmentUsageService>();
 

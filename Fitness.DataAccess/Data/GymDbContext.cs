@@ -45,7 +45,9 @@ namespace FitnessManagement.Data
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupUser> GroupUsers { get; set; }
         public DbSet<Product> Products { get; set; }
-      
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<PurchaseRequest> PurchaseRequests { get; set; }
+
 
 
 
@@ -53,6 +55,20 @@ namespace FitnessManagement.Data
 
         {
             base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<CartItem>()
+               .HasOne(ci => ci.User)  
+               .WithMany(u => u.CartItems)  
+               .HasForeignKey(ci => ci.UserId);  
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Product)  
+                .WithMany(p => p.CartItems)  
+                .HasForeignKey(ci => ci.ProductId);  
+
+
 
             modelBuilder.Entity<GroupUser>()
     .HasKey(gu => new { gu.GroupId, gu.UserId });

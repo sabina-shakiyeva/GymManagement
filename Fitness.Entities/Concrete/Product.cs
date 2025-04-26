@@ -15,6 +15,7 @@ namespace Fitness.Entities.Concrete
 		public int PointCost { get; set; }
 		public int Stock { get; set; }
 		public string? ImageUrl { get; set; }
+        public virtual ICollection<CartItem> CartItems { get; set; }
 
-	}
+    }
 }

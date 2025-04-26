@@ -34,6 +34,7 @@ namespace FitnessManagement.Entities
 
         public ICollection<UserBmiInfo> BmiInfos { get; set; }
         public ICollection<UserEquipmentUsage> EquipmentUsages { get; set; }
+        public virtual ICollection<CartItem> CartItems { get; set; }
 
 
 

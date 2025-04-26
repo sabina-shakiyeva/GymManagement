@@ -24,6 +24,26 @@ namespace FitnessManagement.Controllers
             _userService = userService;
             _userManager = userManager;
         }
+        //dashboarda user kartlarini gormek ucun yazdim UserPackageInfoDto-dan istifade etdim
+        [HttpGet("package-info")]
+        public async Task<IActionResult> GetUserPackageInfo()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(identityUserId))
+            {
+                return Unauthorized("User identity not found");
+            }
+
+            var packageInfo = await _userService.GetUserPackageInfoAsync(identityUserId);
+
+            if (packageInfo == null)
+            {
+                return NotFound("User package information not found");
+            }
+
+            return Ok(packageInfo);
+        }
         //groupdaki userler coxdan aza dogru siralanacaq 
         [HttpGet("group-top-users")]
         public async Task<IActionResult> GetTopUsersByGroup()
