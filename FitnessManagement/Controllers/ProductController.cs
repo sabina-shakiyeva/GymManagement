@@ -15,6 +15,7 @@ namespace FitnessManagement.Controllers
 		{
 			_productService = productService;
 		}
+
 		[HttpGet("products")]
 		public async Task<IActionResult> GetAll()
 		{

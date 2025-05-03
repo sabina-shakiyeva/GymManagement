@@ -107,7 +107,10 @@ namespace FitnessManagement.Controllers
             {
                 return Unauthorized(new { Status = "Error", Message = "Your account is not approved yet. Please wait for admin approval." });
             }
-
+            if (user.IsBlocked == true)
+            {
+                return Unauthorized(new { Status = "Error", Message = "Your account is blocked due to delayed payment. Please contact the administrator." });
+            }
             var userRoles = await _userManager.GetRolesAsync(user);
             var authClaims = new List<Claim>
             {

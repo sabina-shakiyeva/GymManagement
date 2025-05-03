@@ -14,6 +14,7 @@ namespace Fitness.Entities.Models
         public string? Email { get; set; }
         public bool IsActive { get; set; }
         public bool IsApproved { get; set; }
+        public bool IsBlocked { get; set; }
         public string? Phone { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public IFormFile? ImageUrl { get; set; }

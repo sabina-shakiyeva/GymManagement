@@ -84,7 +84,7 @@ namespace Fitness.Business.Concrete
             return usageDtos;
         }
 
-
+        //bura bax
         public async Task<List<UserEquipmentUsage>> GetAllByUserIdAsync(int userId)
         {
             return await _usageDal.GetList(u => u.UserId == userId);

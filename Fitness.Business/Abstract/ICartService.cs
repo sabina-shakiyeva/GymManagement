@@ -17,5 +17,6 @@ namespace Fitness.Business.Abstract
         Task<List<CartItemDto>> GetUserCartAsync(int userId);
 
         Task BuyAllFromCartAsync(int userId);
+        Task<string> BuyNowAsync(string identityUserId, int productId, int quantity);
     }
 }

@@ -44,24 +44,42 @@ public class CartService : ICartService
             var product = item.Product;
             if (product == null) continue;
 
+            if (product.Stock < item.Quantity)
+                throw new Exception($"'{product.Name}' məhsulundan stokda kifayət qədər yoxdur.");
             totalPointCost += item.Quantity * product.PointCost;
+
+            //await _purchaseRequestDal.Add(new PurchaseRequest
+            //{
+            //    UserId = userId,
+            //    ProductId = item.ProductId,
+            //    Quantity = item.Quantity,
+            //    IsApproved = false,
+            //    RequestedAt = DateTime.Now
+            //});
+        }
+
+        if (totalPointCost > user.Point)
+            throw new Exception("Not enough points for all items in cart");
+        user.Point -= totalPointCost;
+        await _userDal.Update(user);
+
+
+
+        foreach (var item in cartItems)
+        {
+            var product = item.Product!;
+            product.Stock -= item.Quantity;
+            await _productDal.Update(product);
 
             await _purchaseRequestDal.Add(new PurchaseRequest
             {
                 UserId = userId,
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
-                IsApproved = false,
+                IsApproved = true,
                 RequestedAt = DateTime.Now
             });
-        }
 
-        if (totalPointCost > user.Point)
-            throw new Exception("Not enough points for all items in cart");
-
-        
-        foreach (var item in cartItems)
-        {
             await _cartItemDal.Delete(item);
         }
     }
@@ -139,6 +157,36 @@ public class CartService : ICartService
 
     }
 
+    public async Task<string> BuyNowAsync(string identityUserId,int productId,int quantity)
+    {
+        var user=await _userDal.Get(u => u.IdentityUserId == identityUserId);
+        var product = await _productDal.Get(p => p.Id == productId);
+        if (product == null || user==null)
+        {
+            throw new Exception("Product or User not found");
+
+        }
+        int totalPointCost = quantity * product.PointCost;
+        if (user.Point < totalPointCost)
+            return "Coininiz yetmir.";
+
+        if (product.Stock < quantity)
+            return "Stokda kifayət qədər məhsul yoxdur.";
+        user.Point -= totalPointCost;
+        await _userDal.Update(user);
+
+        product.Stock -= quantity;
+        await _productDal.Update(product);
+        await _purchaseRequestDal.Add(new PurchaseRequest
+        {
+            UserId = user.Id,
+            ProductId = productId,
+            Quantity = quantity,
+            IsApproved = true,
+            RequestedAt = DateTime.Now
+        });
+        return "Productunuz hazırdır, gəlib götürə bilərsiniz.";
+    }
 
     public async Task RemoveFromCartAsync(int userId, int productId)
     {
@@ -148,4 +196,8 @@ public class CartService : ICartService
             await _cartItemDal.Delete(item);
         }
     }
+
+
+
+
 }

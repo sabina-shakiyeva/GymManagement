@@ -11,7 +11,8 @@ namespace Fitness.Entities.Concrete
     {
         public string FullName { get; set; }
         public bool IsApproved { get; set; } = false;
-       
+        public bool? IsBlocked { get; set; }
+
 
     }
 }

@@ -18,5 +18,7 @@ namespace Fitness.Business.Abstract
         Task<bool> AddUserToGroupAsync(AddUserToGroupDto dto);
         Task<List<GroupGetDto>> GetAllGroupsAsync();
         Task<List<UserGetDto>> GetUsersByGroupIdAsync(int groupId);
+        Task<bool> RemoveUserFromGroupAsync(int groupId, int userId);
+
     }
 }

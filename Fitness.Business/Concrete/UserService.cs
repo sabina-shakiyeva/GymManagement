@@ -29,10 +29,12 @@ namespace Fitness.Business.Concrete
         private readonly IGroupUserDal _groupUserDal;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IPurchaseHistoryService _purchaseHistoryService;
 
 
 
-        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, ITrainerDal trainerDal, RoleManager<IdentityRole> roleManager, IEquipmentDal equipmentDal, IPackageDal packageDal, IGroupUserDal groupUserDal)
+
+        public UserService(IUserDal userDal, IMapper mapper, IFileService fileService, UserManager<ApplicationUser> userManager, ITrainerDal trainerDal, RoleManager<IdentityRole> roleManager, IEquipmentDal equipmentDal, IPackageDal packageDal, IGroupUserDal groupUserDal, IPurchaseHistoryService purchaseHistoryService)
         {
             _userDal = userDal;
             _mapper = mapper;
@@ -43,9 +45,14 @@ namespace Fitness.Business.Concrete
             _equipmentDal = equipmentDal;
             _packageDal = packageDal;
             _groupUserDal= groupUserDal;
-
+            _purchaseHistoryService = purchaseHistoryService;
 
         }
+        public async Task<User> GetByIdentityUserIdAsync(string identityUserId)
+        {
+            return await _userDal.Get(u => u.IdentityUserId == identityUserId);
+        }
+
         public async Task<UserPackageInfoDto> GetUserPackageInfoAsync(string identityUserId)
         {
             var user = await _userDal.Get(
@@ -440,6 +447,11 @@ namespace Fitness.Business.Concrete
             {
                 user.IsApproved = userUpdateDto.IsApproved;
                 identityUser.IsApproved = userUpdateDto.IsApproved;
+            }
+            if (userUpdateDto.IsBlocked)
+            {
+                user.IsBlocked = userUpdateDto.IsBlocked;
+                identityUser.IsBlocked = userUpdateDto.IsBlocked;
             }
             if (userUpdateDto.PackageId.HasValue)
             {

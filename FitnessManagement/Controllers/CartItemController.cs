@@ -1,6 +1,7 @@
 ﻿using Fitness.Business.Abstract;
 using Fitness.DataAccess.Abstract;
 using Fitness.Entities.Models.CartItem;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -9,6 +10,7 @@ namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CartItemController : ControllerBase
     {
         private readonly ICartService _cartService;
@@ -99,6 +101,19 @@ namespace FitnessManagement.Controllers
             var cartItems = await _cartService.GetUserCartAsync(user.Id);
             return Ok(cartItems);
         }
+        [HttpPost("buy-now")]
+        public async Task<IActionResult> BuyNow([FromBody] CartItemAddDto dto)
+        {
+            var userIdentityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdentityId))
+                return Unauthorized("User identity not found");
+
+            var message = await _cartService.BuyNowAsync(userIdentityId, dto.ProductId, dto.Quantity);
+
+            return Ok(new { message });
+        }
+
         [HttpPost("buy-all")]
         public async Task<IActionResult> BuyAll()
         {

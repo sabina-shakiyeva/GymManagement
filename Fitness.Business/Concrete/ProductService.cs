@@ -54,9 +54,11 @@ namespace Fitness.Business.Concrete
 		
 		public async Task<List<ProductGetDto>> GetAllAsync()
 		{
-			var products = await _productDal.GetList();
+            //var products = await _productDal.GetList();
+            var products = await _productDal.GetList(p => p.Stock > 0);
 
-			var productDtos = products.Select(product => new ProductGetDto
+
+            var productDtos = products.Select(product => new ProductGetDto
 			{
 				Id = product.Id,
 				Name = product.Name,

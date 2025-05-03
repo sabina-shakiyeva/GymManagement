@@ -31,6 +31,7 @@ namespace Fitness.Business.Abstract
         Task UpdateUserProfile(int userId, UserProfileUpdateDto userProfileUpdateDto);
         Task<List<TopUserDto>> GetTopUsersByGroupAsync(string identityUserId);
         Task<UserPackageInfoDto> GetUserPackageInfoAsync(string identityUserId);
+        Task<User> GetByIdentityUserIdAsync(string identityUserId);
 
 
 

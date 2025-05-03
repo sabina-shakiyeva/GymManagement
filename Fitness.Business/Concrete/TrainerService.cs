@@ -65,10 +65,101 @@ namespace Fitness.Business.Concrete
 				MobileTelephone = trainer.MobileTelephone
 			};
 		}
+        public async Task UpdateTrainerProfile(int trainerId, TrainerUpdateProfileDto trainerUpdateDto)
+        {
+            var trainer = await _trainerDal.Get(t => t.Id == trainerId);
+            if (trainer == null)
+            {
+                throw new Exception("Trainer not found");
+            }
+
+            var identityUser = await _userManager.FindByIdAsync(trainer.IdentityTrainerId);
+            if (identityUser == null)
+            {
+                throw new Exception("Identity user not found");
+            }
+            if (trainerUpdateDto.MobileTelephone != null)
+            {
+                trainer.MobileTelephone = trainerUpdateDto.MobileTelephone;
+
+            }
+
+            if (!string.IsNullOrEmpty(trainerUpdateDto.Name))
+            {
+                trainer.Name = trainerUpdateDto.Name;
+                identityUser.FullName = trainerUpdateDto.Name;
+            }
+
+            if (!string.IsNullOrEmpty(trainerUpdateDto.Email))
+            {
+                trainer.Email = trainerUpdateDto.Email;
+                identityUser.Email = trainerUpdateDto.Email;
+                identityUser.UserName = trainerUpdateDto.Email;
+
+            }
+            if (!string.IsNullOrEmpty(trainerUpdateDto.Description))
+            {
+                trainer.Description = trainerUpdateDto.Description;
+            }
+
+            if (!string.IsNullOrEmpty(trainerUpdateDto.Experience))
+            {
+                trainer.Experience = trainerUpdateDto.Experience;
+            }
+
+            if (!string.IsNullOrEmpty(trainerUpdateDto.Speciality))
+            {
+                trainer.Speciality = trainerUpdateDto.Speciality;
+            }
+
+            if (trainerUpdateDto.Salary.HasValue)
+            {
+                trainer.Salary = trainerUpdateDto.Salary.Value;
+            }
+
+          
 
 
-		//Say statistikasi
-		public async Task<TrainerStatisticsDto> GetTrainerStatisticsAsync(string trainerIdentityId)
+            if (trainerUpdateDto.ImageUrl != null)
+            {
+                string imageUrl = await _fileService.UploadFileAsync(trainerUpdateDto.ImageUrl);
+                trainer.ImageUrl = imageUrl;
+            }
+         
+            if (!string.IsNullOrEmpty(trainerUpdateDto.NewPassword))
+            {
+                if (!string.IsNullOrEmpty(trainerUpdateDto.CurrentPassword))
+                {
+
+                    var checkPassword = await _userManager.CheckPasswordAsync(identityUser, trainerUpdateDto.CurrentPassword);
+
+                    if (!checkPassword)
+                    {
+                        throw new Exception("Current password is incorrect!");
+                    }
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
+                    var result = await _userManager.ResetPasswordAsync(identityUser, token, trainerUpdateDto.NewPassword);
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception("Failed to change password: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                    }
+
+                }
+
+                else
+                {
+                    throw new Exception("Current password is required to change the password!");
+                }
+
+
+            }
+            trainer.UpdatedDate = DateTime.Now;
+            await _userManager.UpdateAsync(identityUser);
+            await _trainerDal.Update(trainer);
+        }
+
+        //Say statistikasi
+        public async Task<TrainerStatisticsDto> GetTrainerStatisticsAsync(string trainerIdentityId)
         {
             var trainer = await _trainerDal.Get(t => t.IdentityTrainerId == trainerIdentityId);
 

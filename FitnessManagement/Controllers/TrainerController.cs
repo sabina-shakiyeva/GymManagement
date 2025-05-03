@@ -1,6 +1,8 @@
 ﻿using Fitness.Business.Abstract;
 using Fitness.Business.Concrete;
 using Fitness.Entities.Models;
+using Fitness.Entities.Models.Trainer;
+using Fitness.Entities.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,10 +32,24 @@ namespace FitnessManagement.Controllers
 			var trainer = await _trainerService.GetTrainerProfile(identityId);
 			return Ok(trainer);
 		}
+        [HttpPut("profile-update/{trainerId}")]
+        public async Task<IActionResult> UpdateUserProfile(int trainerId, [FromForm] TrainerUpdateProfileDto dto)
+        {
+            try
+            {
+                await _trainerService.UpdateTrainerProfile(trainerId, dto);
+                return Ok("Trainer profile updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-		//QEYD:swaggerde test etme umumen trainer meselelerinde authorize mutleq qalmalidi cunki giris eden trainere gore userler get ve post oluna bilir postmandan test et
 
-		[HttpGet("statistics")]
+        //QEYD:swaggerde test etme umumen trainer meselelerinde authorize mutleq qalmalidi cunki giris eden trainere gore userler get ve post oluna bilir postmandan test et
+
+        [HttpGet("statistics")]
         [Authorize(Roles = "Trainer")]
         public async Task<IActionResult> GetStatistics()
         {

@@ -8,7 +8,7 @@ namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class GroupController : ControllerBase
     {
         private readonly IGroupService _groupService;
@@ -61,8 +61,8 @@ namespace FitnessManagement.Controllers
         public async Task<IActionResult> AddUser([FromBody] AddUserToGroupDto dto)
         {
             var result = await _groupService.AddUserToGroupAsync(dto);
-            if (!result) return BadRequest("Qrupa əlavə edilə bilmədi (istifadəçi mövcud olmaya bilər və ya artıq əlavə edilib)");
-            return Ok("İstifadəçi qrupa əlavə olundu");
+            if (!result) return BadRequest("Could not be added to group (user may not exist or has already been added)");
+            return Ok("User added group successfully");
         }
         //groupdaki userleri gostermek ucundu
         [HttpGet("{groupId}/users")]
@@ -72,6 +72,15 @@ namespace FitnessManagement.Controllers
             return Ok(users);
         }
 
+        [HttpDelete("{groupId}/users/{userId}")]
+        public async Task<IActionResult> RemoveUserFromGroup(int groupId, int userId)
+        {
+            var result = await _groupService.RemoveUserFromGroupAsync(groupId, userId);
+            if (!result)
+                return NotFound("User or Group not found, or the connection is not available.");
+
+            return Ok("User deleted succesfully.");
+        }
 
     }
 }

@@ -112,6 +112,16 @@ namespace Fitness.Business.Concrete
             await _groupDal.Delete(group);
             return true;
         }
+        public async Task<bool> RemoveUserFromGroupAsync(int groupId, int userId)
+        {
+            var groupUser = await _groupUserDal.Get(gu => gu.GroupId == groupId && gu.UserId == userId);
+
+            if (groupUser == null)
+                return false;
+
+            await _groupUserDal.Delete(groupUser);
+            return true;
+        }
 
         public async Task<bool> AddUserToGroupAsync(AddUserToGroupDto dto)
         {

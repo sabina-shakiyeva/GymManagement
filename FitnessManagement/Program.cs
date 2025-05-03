@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
     {
-        policy.WithOrigins("http://localhost:3002") // Frontend URL
+        policy.WithOrigins("http://localhost:3001") // Frontend URL
               .AllowAnyMethod()
               .AllowAnyHeader()
          .AllowCredentials();
@@ -56,6 +56,7 @@ builder.Services.AddScoped<IGroupUserDal, EfGroupUserDal>();
 builder.Services.AddScoped<IMessageDal, EfMessageDal>();
 builder.Services.AddScoped<IProductDal, EfProductDal>();
 builder.Services.AddScoped<ICartItemDal, EfCartItemDal>();
+builder.Services.AddScoped<IPurchaseHistoryDal, EfPurchaseHistoryDal>();
 builder.Services.AddScoped<IPurchaseRequestDal, EfPurchaseRequestDal>();
 builder.Services.AddScoped <IGroupService,GroupService>();
 builder.Services.AddScoped<ITrainerScheduleService,TrainerScheduleService>();
@@ -70,6 +71,7 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<IPurchaseHistoryService,PurchaseHistoryService>();
 
 builder.Services.AddScoped<IUserEquipmentUsageService, UserEquipmentUsageService>();
 

@@ -48,6 +48,8 @@ namespace FitnessManagement.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<PurchaseRequest> PurchaseRequests { get; set; }
 
+        public DbSet<PurchaseHistory> PurchaseHistories { get; set; }
+
 
 
 
