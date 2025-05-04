@@ -3,6 +3,7 @@ using Fitness.DataAccess.Abstract;
 using Fitness.Entities.Concrete;
 using Fitness.Entities.Models.Payment;
 using Fitness.Entities.Models.PurchaseHistory;
+using Fitness.Entities.Models.User;
 using FitnessManagement.Dtos;
 using FitnessManagement.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -166,6 +167,17 @@ namespace Fitness.Business.Concrete
         }
 
 
+        public async Task<List<DelayedUserDto>> GetDelayedBlockedUsersAsync()
+        {
+            var blockedUsers = await _userDal.GetList(u => u.IsBlocked == true);
+            return blockedUsers.Select(u => new DelayedUserDto
+            {
+                UserId = u.Id,
+                FullName = u.Name,
+                Email = u.Email,
+                BlockedDate = u.PackageEndDate 
+            }).ToList();
+        }
 
         public async Task CheckDelayedMonthlyPaymentsAsync()
         {

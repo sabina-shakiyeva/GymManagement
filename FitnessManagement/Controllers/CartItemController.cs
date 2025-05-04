@@ -11,6 +11,7 @@ namespace FitnessManagement.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    //User ucun
     public class CartItemController : ControllerBase
     {
         private readonly ICartService _cartService;
@@ -38,6 +39,7 @@ namespace FitnessManagement.Controllers
             await _cartService.AddToCartAsync(user.Id, dto.ProductId, dto.Quantity);
             return Ok(new { message = "Product added to cart!" });
         }
+
         [HttpDelete("remove-from-cart/{productId}")]
         public async Task<IActionResult> RemoveFromCart(int productId)
         {
@@ -58,7 +60,7 @@ namespace FitnessManagement.Controllers
             await _cartService.RemoveFromCartAsync(user.Id, productId);
             return Ok(new { message = "Product removed from cart!" });
         }
-
+        //+ VE - UCUN 
         [HttpPost("update-quantity")]
         public async Task<IActionResult> UpdateQuantity([FromBody] CartItemUpdateDto dto)
         {
@@ -81,6 +83,7 @@ namespace FitnessManagement.Controllers
             await _cartService.UpdateQuantityAsync(user.Id, dto.ProductId, dto.NewQuantity);
             return Ok(new { message = "Product quantity updated!" });
         }
+        //SEBETI GORMEK UCUN
         [HttpGet("get-cart")]
         public async Task<IActionResult> GetCart()
         {
@@ -101,6 +104,7 @@ namespace FitnessManagement.Controllers
             var cartItems = await _cartService.GetUserCartAsync(user.Id);
             return Ok(cartItems);
         }
+        //bu ise pramoy alis ucundur
         [HttpPost("buy-now")]
         public async Task<IActionResult> BuyNow([FromBody] CartItemAddDto dto)
         {
@@ -113,7 +117,7 @@ namespace FitnessManagement.Controllers
 
             return Ok(new { message });
         }
-
+        //bu ise kartda olan umumi mehsullarin alisidir
         [HttpPost("buy-all")]
         public async Task<IActionResult> BuyAll()
         {

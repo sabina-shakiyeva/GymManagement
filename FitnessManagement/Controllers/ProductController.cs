@@ -7,6 +7,7 @@ namespace FitnessManagement.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	//Admuin ucun
 	public class ProductController : ControllerBase
 	{
 		private readonly IProductService _productService;
@@ -15,7 +16,7 @@ namespace FitnessManagement.Controllers
 		{
 			_productService = productService;
 		}
-
+		//bunu hem adminde hem userde istifade ede biler
 		[HttpGet("products")]
 		public async Task<IActionResult> GetAll()
 		{

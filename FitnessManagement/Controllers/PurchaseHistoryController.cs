@@ -11,6 +11,7 @@ namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //Payment history
     public class PurchaseHistoryController : ControllerBase
     {
         private readonly IPurchaseHistoryService _purchaseHistoryService;
@@ -24,6 +25,7 @@ namespace FitnessManagement.Controllers
             _paymentService = paymentService;
             _userDal = userDal;
         }
+        //bu lazim deyil
         [HttpGet("my-history")]
         [Authorize]
       
@@ -43,6 +45,7 @@ namespace FitnessManagement.Controllers
 
             return Ok(history);
         }
+        //kimler ne zaman odenisi edib admin gorsun onlari Admin
         [HttpGet("all")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllPurchaseHistories()
@@ -50,6 +53,7 @@ namespace FitnessManagement.Controllers
             var history = await _purchaseHistoryService.GetAllPurchaseHistoriesAsync();
             return Ok(history);
         }
+        //buda lazim deyil
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddPurchaseHistory([FromBody] PurchaseHistoryAddDto dto)
@@ -57,6 +61,7 @@ namespace FitnessManagement.Controllers
             await _purchaseHistoryService.AddPurchaseHistoryAsync(dto);
             return Ok("Purchase history added successfully.");
         }
+        //bu ise my statdaki kimi ayligi cedvel kimi bolur odenmeyenleri
         [HttpGet("my-payment-status")]
         [Authorize]
         public async Task<IActionResult> GetMyPaymentStatus()

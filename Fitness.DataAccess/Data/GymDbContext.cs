@@ -25,7 +25,7 @@ namespace FitnessManagement.Data
 
         public DbSet<Trainer> Trainers { get; set; }
 
-        public DbSet<Workout> Workouts { get; set; }
+       // public DbSet<Workout> Workouts { get; set; }
 
         public DbSet<Package> Packages { get; set; }
 
@@ -39,7 +39,7 @@ namespace FitnessManagement.Data
 
         public DbSet<TrainerSchedule> TrainerSchedules { get; set; }
 
-        public DbSet<UserWorkout> UserWorkouts { get; set; }
+        //public DbSet<UserWorkout> UserWorkouts { get; set; }
         public DbSet<UserBmiInfo> UserBmiInfos { get; set; }
         public DbSet<UserEquipmentUsage> UserEquipmentUsages { get; set; }
         public DbSet<Group> Groups { get; set; }
@@ -117,37 +117,37 @@ namespace FitnessManagement.Data
               .OnDelete(DeleteBehavior.SetNull);
 
 
-            modelBuilder.Entity<Workout>()
+      //      modelBuilder.Entity<Workout>()
 
-      .HasOne(w => w.Trainer)
+      //.HasOne(w => w.Trainer)
 
-      .WithMany(t => t.Workouts)
+      //.WithMany(t => t.Workouts)
 
-      .HasForeignKey(w => w.TrainerId);
+      //.HasForeignKey(w => w.TrainerId);
 
-            modelBuilder.Entity<UserWorkout>()
+      //      modelBuilder.Entity<UserWorkout>()
 
-       .HasKey(uw => new { uw.UserId, uw.WorkoutId });
+      // .HasKey(uw => new { uw.UserId, uw.WorkoutId });
 
-            modelBuilder.Entity<UserWorkout>()
+      //      modelBuilder.Entity<UserWorkout>()
 
-       .HasOne(uw => uw.User)
+      // .HasOne(uw => uw.User)
 
-       .WithMany(u => u.UserWorkouts)
+      // .WithMany(u => u.UserWorkouts)
 
-       .HasForeignKey(uw => uw.UserId)
+      // .HasForeignKey(uw => uw.UserId)
 
-        .OnDelete(DeleteBehavior.Cascade);
+      //  .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<UserWorkout>()
+      //      modelBuilder.Entity<UserWorkout>()
 
-                .HasOne(uw => uw.Workout)
+      //          .HasOne(uw => uw.Workout)
 
-                .WithMany(w => w.UserWorkouts)
+      //          .WithMany(w => w.UserWorkouts)
 
-                .HasForeignKey(uw => uw.WorkoutId)
+      //          .HasForeignKey(uw => uw.WorkoutId)
 
-                .OnDelete(DeleteBehavior.Cascade);
+      //          .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<Attendance>()

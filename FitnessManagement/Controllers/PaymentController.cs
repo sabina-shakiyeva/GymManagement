@@ -24,7 +24,7 @@ namespace FitnessManagement.Controllers
 
 
         }
-
+        //ayliq odenisi etmekm isteyenler ucun form
         [HttpPost("monthly-payment")]
         [Authorize]
         public async Task<IActionResult> ProcessMonthlyPayment([FromBody] Payment2Dto paymentDto)
@@ -44,6 +44,7 @@ namespace FitnessManagement.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        //ilk paket alinanda olur 
         [HttpPost("buy-package")]
         public async Task<IActionResult> BuyPackage([FromQuery] int packageId, [FromBody] PaymentDto paymentDto)
         {
@@ -62,6 +63,7 @@ namespace FitnessManagement.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+        //background service-e aid
         [HttpPost("check-delayed-payments")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CheckDelayedPayments()
@@ -69,8 +71,16 @@ namespace FitnessManagement.Controllers
             await _paymentService.CheckDelayedMonthlyPaymentsAsync();
             return Ok(new { message = "Delayed payments checked and updated." });
         }
+        //admin terefde bloklanan userlerin getirilmesi
+        [HttpGet("delayed-users")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetDelayedUsers()
+        {
+            var users = await _paymentService.GetDelayedBlockedUsersAsync();
+            return Ok(users);
+        }
 
-
+        //bunu yazma
         [HttpGet("payments")]
         public async Task<IActionResult> GetAllUserPackageTrainer()
         {

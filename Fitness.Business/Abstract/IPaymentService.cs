@@ -1,4 +1,5 @@
 ﻿using Fitness.Entities.Models.Payment;
+using Fitness.Entities.Models.User;
 using FitnessManagement.Dtos;
 using System;
 using System.Collections.Generic;
@@ -14,5 +15,7 @@ namespace Fitness.Business.Abstract
         Task CheckDelayedMonthlyPaymentsAsync();
 
         Task<string> ProcessMonthlyPaymentAsync(string identityUserId, Payment2Dto paymentDto);
+        Task<List<DelayedUserDto>> GetDelayedBlockedUsersAsync();
+
     }
 }

@@ -29,7 +29,7 @@ namespace FitnessManagement.Entities
         public DateTime? PackageStartDate { get; set; }
         public DateTime? PackageEndDate { get; set; }
         public ICollection<GroupUser> GroupUsers { get; set; }
-        public ICollection<UserWorkout> UserWorkouts { get; set; }
+      //  public ICollection<UserWorkout> UserWorkouts { get; set; }
         public ICollection<Payment> Payments { get; set; }
         public ICollection<Message> Messages { get; set; }
 

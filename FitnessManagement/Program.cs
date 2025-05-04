@@ -40,6 +40,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHostedService<DelayedPaymentBackgroundService>();
 
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IAdminDal, EfAdminDal>();
@@ -58,6 +59,7 @@ builder.Services.AddScoped<IProductDal, EfProductDal>();
 builder.Services.AddScoped<ICartItemDal, EfCartItemDal>();
 builder.Services.AddScoped<IPurchaseHistoryDal, EfPurchaseHistoryDal>();
 builder.Services.AddScoped<IPurchaseRequestDal, EfPurchaseRequestDal>();
+builder.Services.AddScoped<IWorkoutPlanDal,EfWorkoutPlanDal>();
 builder.Services.AddScoped <IGroupService,GroupService>();
 builder.Services.AddScoped<ITrainerScheduleService,TrainerScheduleService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
@@ -72,6 +74,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<IPurchaseHistoryService,PurchaseHistoryService>();
+builder.Services.AddScoped<IWorkoutPlanService, WorkoutPlanService>();
 
 builder.Services.AddScoped<IUserEquipmentUsageService, UserEquipmentUsageService>();
 

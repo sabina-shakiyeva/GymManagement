@@ -19,7 +19,7 @@ namespace FitnessManagement.Entities
         public decimal? Salary { get; set; } 
         public string? MobileTelephone { get; set; }
         public ICollection<User> Users { get; set; }
-        public ICollection<Workout> Workouts { get; set; }
+       // public ICollection<Workout> Workouts { get; set; }
         public ICollection<Message> Messages { get; set; }
         public ICollection<TrainerSchedule> TrainerSchedules { get; set; }
 

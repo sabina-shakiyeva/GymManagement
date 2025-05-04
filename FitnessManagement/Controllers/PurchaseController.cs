@@ -7,6 +7,7 @@ namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //PRODUCT ALIS TARIXCESI
     public class PurchaseController : ControllerBase
     {
         private readonly IPurchaseService _purchaseService;
@@ -15,7 +16,7 @@ namespace FitnessManagement.Controllers
         {
             _purchaseService = purchaseService;
         }
-
+        //alinan produktlkarin siyahisini yeni kim alib ne vaxt alib bunlari admin gorur
         [HttpGet]
         public async Task<ActionResult<List<PurchaseProductDto>>> GetAll()
         {
@@ -23,7 +24,7 @@ namespace FitnessManagement.Controllers
             return Ok(purchases);
         }
 
-        
+        //buida alinan produktlarin silinmesiid
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
