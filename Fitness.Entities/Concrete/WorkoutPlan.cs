@@ -15,10 +15,10 @@ namespace Fitness.Entities.Concrete
         public string Title { get; set; }            
         public string Description { get; set; }
         public int TrainerId { get; set; }
-        public User Trainer { get; set; }
+        public Trainer? Trainer { get; set; }
 
-        public ICollection<WorkoutDay> WorkoutDays { get; set; }
-        public ICollection<PackageWorkout> PackageWorkouts { get; set; }
+        public ICollection<WorkoutDay>? WorkoutDays { get; set; }
+        public ICollection<PackageWorkout>? PackageWorkouts { get; set; }
 
     }
 }

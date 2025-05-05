@@ -12,7 +12,7 @@ namespace FitnessManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class TrainerController : ControllerBase
     {
         private readonly ITrainerService _trainerService;

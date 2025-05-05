@@ -1,4 +1,5 @@
 ﻿using Fitness.Core.Abstraction;
+using Fitness.Entities.Concrete;
 
 namespace FitnessManagement.Entities
 {
@@ -10,5 +11,6 @@ namespace FitnessManagement.Entities
         public string? Description { get; set; }
         public ICollection<User> Users { get; set; }
         public ICollection<Payment> Payments { get; set; }
+        public ICollection<PackageWorkout> PackageWorkouts { get; set; }
     }
 }

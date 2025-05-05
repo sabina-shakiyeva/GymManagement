@@ -46,5 +46,12 @@ namespace FitnessManagement.Controllers
             await _workoutPlanService.DeletePlanAsync(id);
             return Ok("Workout plan deleted successfully.");
         }
+        [HttpGet("by-package/{packageId}")]
+        public async Task<IActionResult> GetPlanByPackageId(int packageId)
+        {
+            var plan = await _workoutPlanService.GetPlanByPackageIdAsync(packageId);
+            return Ok(plan);
+        }
+
     }
 }

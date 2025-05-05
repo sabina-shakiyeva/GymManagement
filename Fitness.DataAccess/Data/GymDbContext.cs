@@ -49,6 +49,10 @@ namespace FitnessManagement.Data
         public DbSet<PurchaseRequest> PurchaseRequests { get; set; }
 
         public DbSet<PurchaseHistory> PurchaseHistories { get; set; }
+        public DbSet<WorkoutPlan> WorkoutPlans { get; set; }
+        public DbSet<WorkoutDay> WorkoutDays { get; set; }
+        public DbSet<WorkoutExercise> WorkoutExercises { get; set; }
+        public DbSet<PackageWorkout> PackageWorkouts { get; set; }
 
 
 
@@ -58,7 +62,35 @@ namespace FitnessManagement.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // WorkoutPlan -> WorkoutDay (One to Many)
+            modelBuilder.Entity<WorkoutDay>()
+                .HasOne(wd => wd.WorkoutPlan)
+                .WithMany(wp => wp.WorkoutDays)
+                .HasForeignKey(wd => wd.WorkoutPlanId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            // WorkoutDay -> WorkoutExercise (One to Many)
+            modelBuilder.Entity<WorkoutExercise>()
+                .HasOne(we => we.WorkoutDay)
+                .WithMany(wd => wd.Exercises)
+                .HasForeignKey(we => we.WorkoutDayId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // WorkoutPlan <-> Package (Many-to-Many with join table: PackageWorkout)
+            modelBuilder.Entity<PackageWorkout>()
+                .HasKey(pw => new { pw.PackageId, pw.WorkoutPlanId }); // Composite key
+
+            modelBuilder.Entity<PackageWorkout>()
+                .HasOne(pw => pw.Package)
+                .WithMany(p => p.PackageWorkouts)
+                .HasForeignKey(pw => pw.PackageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PackageWorkout>()
+                .HasOne(pw => pw.WorkoutPlan)
+                .WithMany(wp => wp.PackageWorkouts)
+                .HasForeignKey(pw => pw.WorkoutPlanId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<CartItem>()
                .HasOne(ci => ci.User)  

@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace Fitness.DataAccess.Abstract
 {
-    public interface IWorkoutPlanDal: IEntityRepository<WorkoutPlan>
+    public interface IPackageWorkoutDal: IEntityRepository<PackageWorkout>
     {
-        Task<List<WorkoutPlan>> GetAllWithIncludesAsync();
     }
 }

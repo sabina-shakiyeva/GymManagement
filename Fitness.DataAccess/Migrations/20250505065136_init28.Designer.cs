@@ -4,6 +4,7 @@ using FitnessManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fitness.DataAccess.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    partial class GymDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250505065136_init28")]
+    partial class init28
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -433,8 +436,6 @@ namespace Fitness.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EquipmentId");
 
                     b.HasIndex("WorkoutDayId");
 
@@ -1152,26 +1153,18 @@ namespace Fitness.DataAccess.Migrations
 
             modelBuilder.Entity("Fitness.Entities.Concrete.WorkoutExercise", b =>
                 {
-                    b.HasOne("FitnessManagement.Entities.Equipment", "Equipment")
-                        .WithMany()
-                        .HasForeignKey("EquipmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Fitness.Entities.Concrete.WorkoutDay", "WorkoutDay")
                         .WithMany("Exercises")
                         .HasForeignKey("WorkoutDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Equipment");
-
                     b.Navigation("WorkoutDay");
                 });
 
             modelBuilder.Entity("Fitness.Entities.Concrete.WorkoutPlan", b =>
                 {
-                    b.HasOne("FitnessManagement.Entities.Trainer", "Trainer")
+                    b.HasOne("FitnessManagement.Entities.User", "Trainer")
                         .WithMany()
                         .HasForeignKey("TrainerId")
                         .OnDelete(DeleteBehavior.Cascade)

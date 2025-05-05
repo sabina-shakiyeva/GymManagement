@@ -19,5 +19,6 @@ namespace Fitness.Entities.Models.User
 		public string? ImageUrl { get; set; }
 		public int? TrainerId { get; set; }//traner name-i gorsenmelidi
 		public int? PackageId { get; set; }//package name-i
-	}
+        public int? Point { get; set; }
+    }
 }

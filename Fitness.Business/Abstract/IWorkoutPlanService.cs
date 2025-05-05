@@ -14,5 +14,6 @@ namespace Fitness.Business.Abstract
         Task AddPlanAsync(WorkoutPlanDto dto);
         Task UpdatePlanAsync(int id, WorkoutPlanDto dto);
         Task DeletePlanAsync(int id);
+        Task<WorkoutPlanGetDto> GetPlanByPackageIdAsync(int packageId);
     }
 }

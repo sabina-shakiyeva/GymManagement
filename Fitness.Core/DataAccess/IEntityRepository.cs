@@ -16,7 +16,9 @@ namespace Fitness.Core.DataAccess
         Task<List<T>> GetList(Expression<Func<T, bool>> filter = null);
         Task<List<T>> GetList(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IQueryable<T>> include);
         //Task<List<T>> GetList(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
-
+    //    Task<List<T>> GetList(
+    //Expression<Func<T, bool>> filter = null,
+    //Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
 
         Task<T> Get(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IQueryable<T>> include);
 

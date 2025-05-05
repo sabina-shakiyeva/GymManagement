@@ -225,6 +225,7 @@ namespace Fitness.Business.Concrete
 				DateOfBirth = user.DateOfBirth,
 				TrainerId = user.TrainerId,
 				PackageId = user.PackageId,
+                Point=user.Point,
 				TrainerName = user.Trainer != null ? user.Trainer.Name : null,
 				PackageName = user.Package != null ? user.Package.PackageName: null
 			};

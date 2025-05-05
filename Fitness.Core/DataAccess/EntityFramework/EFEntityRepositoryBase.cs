@@ -55,6 +55,20 @@ namespace Fitness.Core.DataAccess.EntityFramework
 
             return await query.ToListAsync();
         }
+    //    public async Task<List<TEntity>> GetList(
+    //Expression<Func<TEntity, bool>> filter = null,
+    //Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null)
+    //    {
+    //        IQueryable<TEntity> query = _context.Set<TEntity>();
+
+    //        if (include != null)
+    //            query = include(query);
+
+    //        if (filter != null)
+    //            query = query.Where(filter);
+
+    //        return await query.ToListAsync();
+    //    }
 
         public async Task<TEntity> Get(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {

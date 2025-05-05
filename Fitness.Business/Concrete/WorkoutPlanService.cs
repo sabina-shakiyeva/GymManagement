@@ -7,21 +7,63 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Fitness.Business.Concrete
 {
-    public class WorkoutPlanService: IWorkoutPlanService
+    public class WorkoutPlanService : IWorkoutPlanService
     {
         private readonly IWorkoutPlanDal _planDal;
+        private readonly IWorkoutDayDal _dayDal;
+        private readonly IWorkoutExerciseDal _exerciseDal;
+        private readonly IPackageWorkoutDal _packageWorkoutDal;
         private readonly IMapper _mapper;
-
-        public WorkoutPlanService(IWorkoutPlanDal planDal, IMapper mapper)
+        public WorkoutPlanService(
+            IWorkoutPlanDal planDal,
+            IWorkoutDayDal dayDal,
+            IWorkoutExerciseDal exerciseDal,
+            IPackageWorkoutDal packageWorkoutDal,
+            IMapper mapper)
         {
             _planDal = planDal;
+            _dayDal = dayDal;
+            _exerciseDal = exerciseDal;
+            _packageWorkoutDal = packageWorkoutDal;
             _mapper = mapper;
         }
+        //public async Task<List<WorkoutPlanGetDto>> GetAllPlansAsync()
+        //{
+        //    var plans = await _planDal.GetList(
+        //        filter: null,
+        //        include: q => q.Include(p => p.WorkoutDays)
+        //                       .ThenInclude(d => d.Exercises)
+        //                       .Include(p => p.PackageWorkouts)
+        //    );
+
+        //    var result = plans.Select(plan => new WorkoutPlanGetDto
+        //    {
+        //        Id = plan.Id,
+        //        Title = plan.Title,
+        //        Description = plan.Description,
+        //        TrainerId = plan.TrainerId,
+
+        //        Days = plan.WorkoutDays?.Select(day => new WorkoutDayDto
+        //        {
+        //            DayNumber = day.DayNumber,
+        //            Exercises = day.Exercises?.Select(ex => new WorkoutExerciseDto
+        //            {
+        //                EquipmentId = ex.EquipmentId,
+        //                EquipmentName = ex.EquipmentName,
+        //                Duration = ex.Duration,
+        //                Repetitions = ex.Repetitions
+        //            }).ToList()
+        //        }).ToList(),
+
+        //        PackageIds = plan.PackageWorkouts?.Select(p => p.PackageId).ToList()
+        //    }).ToList();
+
+        //    return result;
+        //}
 
         public async Task<List<WorkoutPlanGetDto>> GetAllPlansAsync()
         {
@@ -33,6 +75,7 @@ namespace Fitness.Business.Concrete
             );
             return _mapper.Map<List<WorkoutPlanGetDto>>(plans);
         }
+
         public async Task<WorkoutPlanGetDto> GetPlanByIdAsync(int id)
         {
             var plan = await _planDal.Get(
@@ -47,18 +90,54 @@ namespace Fitness.Business.Concrete
 
             return _mapper.Map<WorkoutPlanGetDto>(plan);
         }
+
+    
         public async Task AddPlanAsync(WorkoutPlanDto dto)
         {
-            var plan = _mapper.Map<WorkoutPlan>(dto);
-
-            plan.PackageWorkouts = dto.PackageIds.Select(pid => new PackageWorkout
+            var plan = new WorkoutPlan
             {
-                PackageId = pid,
-                WorkoutPlan = plan
-            }).ToList();
+                Title = dto.Title,
+                Description = dto.Description,
+                TrainerId = dto.TrainerId,
+            };
 
-            await _planDal.Add(plan);
+            await _planDal.Add(plan); 
+
+            foreach (var dayDto in dto.Days)
+            {
+                var day = new WorkoutDay
+                {
+                    WorkoutPlanId = plan.Id,
+                    DayNumber = dayDto.DayNumber
+                };
+                await _dayDal.Add(day);
+
+                foreach (var exDto in dayDto.Exercises)
+                {
+                    var exercise = new WorkoutExercise
+                    {
+                        WorkoutDayId = day.Id,
+                        EquipmentId = exDto.EquipmentId,
+                        EquipmentName = exDto.EquipmentName,
+                        Duration = exDto.Duration,
+                        Repetitions = exDto.Repetitions
+                    };
+                    await _exerciseDal.Add(exercise);
+                }
+            }
+
+            foreach (var packageId in dto.PackageIds)
+            {
+                var pw = new PackageWorkout
+                {
+                    WorkoutPlanId = plan.Id,
+                    PackageId = packageId
+                };
+                await _packageWorkoutDal.Add(pw);
+            }
         }
+
+
         public async Task UpdatePlanAsync(int id, WorkoutPlanDto dto)
         {
             var existing = await _planDal.Get(
@@ -74,16 +153,61 @@ namespace Fitness.Business.Concrete
             existing.WorkoutDays.Clear();
             existing.PackageWorkouts.Clear();
 
-            _mapper.Map(dto, existing);
-
-            existing.PackageWorkouts = dto.PackageIds.Select(pid => new PackageWorkout
-            {
-                PackageId = pid,
-                WorkoutPlanId = existing.Id
-            }).ToList();
+            existing.Title = dto.Title;
+            existing.Description = dto.Description;
+            existing.TrainerId = dto.TrainerId;
 
             await _planDal.Update(existing);
+
+            foreach (var dayDto in dto.Days)
+            {
+                var day = new WorkoutDay
+                {
+                    WorkoutPlanId = existing.Id,
+                    DayNumber = dayDto.DayNumber
+                };
+                await _dayDal.Add(day);
+
+                foreach (var exDto in dayDto.Exercises)
+                {
+                    var exercise = new WorkoutExercise
+                    {
+                        WorkoutDayId = day.Id,
+                        EquipmentId = exDto.EquipmentId,
+                        EquipmentName = exDto.EquipmentName,
+                        Duration = exDto.Duration,
+                        Repetitions = exDto.Repetitions
+                    };
+                    await _exerciseDal.Add(exercise);
+                }
+            }
+
+            foreach (var packageId in dto.PackageIds)
+            {
+                var pw = new PackageWorkout
+                {
+                    WorkoutPlanId = existing.Id,
+                    PackageId = packageId
+                };
+                await _packageWorkoutDal.Add(pw);
+            }
         }
+        public async Task<WorkoutPlanGetDto> GetPlanByPackageIdAsync(int packageId)
+        {
+            var plan = await _planDal.Get(
+                filter: p => p.PackageWorkouts.Any(pw => pw.PackageId == packageId),
+                include: q => q.Include(p => p.WorkoutDays)
+                               .ThenInclude(d => d.Exercises)
+                               .Include(p => p.PackageWorkouts)
+            );
+
+            if (plan == null)
+                throw new Exception("Plan not found for this package");
+
+            return _mapper.Map<WorkoutPlanGetDto>(plan);
+        }
+
+
         public async Task DeletePlanAsync(int id)
         {
             var plan = await _planDal.Get(p => p.Id == id);
