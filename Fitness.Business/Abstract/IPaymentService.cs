@@ -16,6 +16,7 @@ namespace Fitness.Business.Abstract
 
         Task<string> ProcessMonthlyPaymentAsync(string identityUserId, Payment2Dto paymentDto);
         Task<List<DelayedUserDto>> GetDelayedBlockedUsersAsync();
+        Task<List<SimplePaymentDto>> GetUserPaymentsAsync(string identityUserId);
 
     }
 }

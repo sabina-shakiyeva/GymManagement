@@ -65,7 +65,7 @@ namespace Fitness.Business.Concrete
             {
                 UserId = user.Id,
                 PackageId = packageId,
-                Amount = isMonthly ? monthlyAmount : totalAmount,
+                Amount = paymentDto.Amount,
                 PaymentDate = DateTime.Now
             });
 
@@ -177,6 +177,24 @@ namespace Fitness.Business.Concrete
                 Email = u.Email,
                 BlockedDate = u.PackageEndDate 
             }).ToList();
+        }
+        //userin odediyi odenisleri gore bileceyik
+        public async Task<List<SimplePaymentDto>> GetUserPaymentsAsync(string identityUserId)
+        {
+            var user = await _userDal.Get(u => u.IdentityUserId == identityUserId);
+            if (user == null)
+                throw new Exception("User not found.");
+
+            var payments = await _paymentDal.GetList(p => p.UserId == user.Id);
+
+            return payments
+                .OrderByDescending(p => p.PaymentDate)
+                .Select(p => new SimplePaymentDto
+                {
+                    Amount = p.Amount,
+                    PaymentDate = p.PaymentDate
+                })
+                .ToList();
         }
 
         public async Task CheckDelayedMonthlyPaymentsAsync()

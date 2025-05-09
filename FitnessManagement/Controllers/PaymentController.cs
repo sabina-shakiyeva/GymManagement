@@ -87,5 +87,15 @@ namespace FitnessManagement.Controllers
             var result = await _userService.GetPayments();
             return Ok(result);
         }
+
+        //bu userin odenis tarixcesidi yeni ne zaman hansi odenisleri edib onlari gorsun
+        [HttpGet("user-payments")]
+        public async Task<IActionResult> GetUserPayments()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var payments = await _paymentService.GetUserPaymentsAsync(userId);
+            return Ok(payments);
+        }
+
     }
 }
